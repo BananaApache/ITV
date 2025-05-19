@@ -4,7 +4,7 @@
 
 ### Convert Derivations in input.s to look like output.s
 
-> - Using Python
+> Using Python
 > Each formula must be categorized into tcf, fof, or thf
 
 > Each formula must include **name**, **formula_role**, **formula**, **inference** (with **inference_rule**, **level**, **parents**)
