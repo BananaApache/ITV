@@ -80,6 +80,7 @@ function getParentsFromSource(source, node){
 		// console.log("got inference record");
 		let inference_record = dag.inference_record();
 		node.inference_record = inference_record.getText();
+		console.log(inference_record.getText());
 
 		//@=========================================================================================
 		//~ ORIGINAL FROM JACK
@@ -154,6 +155,20 @@ function getNodeLevel(source, node){
     }
     // console.log("Got node level", node.level);
 }
+
+//@===========================================================================================
+//~ D&E added to get nextTo source
+function getNodeNextTo(source, node) {
+	let regex = /nextTo\(['"]([^'"]+)['"]\)/;
+	try {
+		node.nextTo = node.tptp.match(regex)[1];
+	}
+	catch(e) {
+		console.log(`node ${node.name} has no nextTo`)
+	}
+}
+
+//@===========================================================================================
 
 // this class exists to format the relevant parts of the parse tree for ease of use.
 // It makes it JSON. To see the schema, look at the "process" method.
@@ -242,6 +257,16 @@ class Formatter extends Listener {
             console.log(`"${node.name}" has no level (or we failed getting it).`);
 			console.log(e);
         }
+		//@=========================================================================================
+		//~ D&E added to get nextTo 
+        try {
+            getNodeNextTo(source, node);
+        }
+        catch (e) {
+            console.log(`"${node.name}" has no nextTo (or we failed getting it).`);
+			console.log(e);
+        }
+		//@=========================================================================================
 
 		this.node_map[node.name] = node;
 	}
@@ -370,13 +395,31 @@ let proofToGV = function (nodes) {
 		gvLines.push(`{rank=same; ${names.map(x=>`"${x}"`).join(' ')}}`);
     }
 
-
+	
     for(let node of nodeList){
 		let arrowOrNot = node.graphviz.invis ? " [dir=none] " : "";
         node.parents.forEach(function (p) {gvLines.push(`"${p}"` + " -> " + `"${node.name}"` + arrowOrNot)});
     }
 
+	//@ 																								
+	//~ D&E added for nextTo implementation
+
+	window.nodeList = nodeList
+
+	for (let node of nodeList) {
+		if (node.nextTo != undefined) {
+			gvLines.push("{rank=same; " + `"${node.name}"` + " " + `"'${node.nextTo}'"` + "}");
+			gvLines.push("subgraph cluster_adjacent {");
+			gvLines.push("style=invis;");
+			gvLines.push(`"'${node.nextTo}'"; "${node.name}";`);
+			gvLines.push("}");
+		}
+	}
+	
+	//@ 																								
+
 	gvLines.push("}");
+	console.log(gvLines.join('\n'));
 	return gvLines.join('\n');
 }
 
