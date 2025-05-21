@@ -70,7 +70,7 @@ tcf(t8,conjecture,
         
 thf('l1:1',axiom, 
     p(c), 
-    inference(lemma,[level(3)],['t2:2']), 
+    inference(lemma,[level(2)],['t2:2'], nextTo('t2:2')), 
     [] ).
         
 fof('t9:1',plain, 
@@ -95,7 +95,7 @@ tcf(t11,conjecture,
         
 thf('l2:1',axiom, 
     ~q(b), 
-    inference(lemma,[level(2)],['t1:1']), 
+    inference(lemma,[level(1)],['t1:1'], nextTo('t1:1')), 
     [] ).
         
 fof('t12:1',plain, 

@@ -79,9 +79,10 @@ def get_all_cnfs(filename="input.s"):
 all_cnfs = get_all_cnfs("input.s")
 
 output = [STARTING_LINE]
+false_parents = []
 
 for cnf in all_cnfs:
-    if "|" in cnf['formula']:
+    if "|" in cnf['formula']: # for formulas
         literals = cnf['formula'].split("|")
         for i, literal in enumerate(literals):
             new_formula = f"""
@@ -92,26 +93,35 @@ fof('{cnf['name']}:{i + 1}',plain,
             """
             output.append(new_formula)
     
-    if "true" in cnf['formula'] or "false" in cnf['formula']:
+    if "true" in cnf['formula'] or "false" in cnf['formula']: # for $true and $false
         new_formula = f"""
 tcf({cnf['name']},conjecture, 
     {cnf['formula']}, 
     inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']), 
     [] ).
         """
-        output.append(new_formula)
 
-    if cnf['inference_rule'] == "lemma":
+#         cnf_parents = [item.strip() for item in cnf['parents'].strip('[]').split(',')]
+#         cnf_parents = [item for item in cnf_parents if item not in false_parents]
+
 #         new_formula = f"""
-# thf('{cnf['name']}:{1}',axiom, 
+# tcf({cnf['name']},conjecture, 
 #     {cnf['formula']}, 
-#     inference({cnf['inference_rule']},[level({len(cnf['path'])})],nextTo('{cnf['path'][0]}'),['{cnf['path'][0]}']), 
+#     inference({cnf['inference_rule']},[level({len(cnf['path'])})],{cnf_parents}), 
 #     [] ).
 #         """
+
+#         for item in cnf['parents'].strip('[]').split(','):
+#             if item.strip() not in false_parents:
+#                 false_parents.append(item.strip())
+
+        output.append(new_formula)
+
+    if cnf['inference_rule'] == "lemma": # for lemmas
         new_formula = f"""
 thf('{cnf['name']}:{1}',axiom, 
     {cnf['formula']}, 
-    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']), 
+    inference({cnf['inference_rule']},[level({len(cnf['path']) - 1})],['{cnf['path'][0]}'], nextTo('{cnf['path'][0]}')), 
     [] ).
         """
         output.append(new_formula)
