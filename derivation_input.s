@@ -16,7 +16,7 @@ cnf(t5,plain, $false,
     inference(connection,[status(thm),path([t4:1,t2:2,t1:1,0:0])],[t4:1,t2:2]) ).
 
 cnf(t6,plain, q(c) | ~q(b),
-    inference(extension,[status(thm),path([t2:2,t1:1,0:0])],[c5]) ).
+    inference(extension,[status(thm),path([t4:2,t2:2,t1:1,0:0])],[c5]) ).
 
 cnf(t7,plain, $false,
     inference(connection,[status(thm),path([t6:1,t4:2,t2:2,t1:1,0:0])],[t6:1,t4:2]) ).
