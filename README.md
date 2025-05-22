@@ -2,7 +2,7 @@
 
 
 
-![Alt text](relative%20./diagram.png?raw=true "Title")
+![Alt text](%20./diagram.png?raw=true "Title")
 > Note: Need to add nextTo(*node*) as a parameter in BNF. We do not need to edit SyntaxBNF.
 
 ### Convert Derivations in input.s to look like output.s
