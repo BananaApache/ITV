@@ -1,5 +1,8 @@
 # ITV
 
+
+![org diagram]("./diagram.png")
+
 > Note: Need to add nextTo(*node*) as a parameter in BNF. We do not need to edit SyntaxBNF.
 
 ### Convert Derivations in input.s to look like output.s
