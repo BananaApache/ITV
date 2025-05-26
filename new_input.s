@@ -144,36 +144,53 @@ cnf(t10,plain,
     inference(connection,[status(thm),path([t9:1,t2:3,t1:1,0:0])],[t9:1,t2:3]) ).
 
 cnf(t11,plain,
-    $false,
-    inference(lemma_extension,[status(thm),path([l1:1,t9:2,t2:3,t1:1,0:0])],[l1:1,t9:2]) ).
-    
+    p(c),
+    inference(lemma_extension,[status(thm),path([t9:2,t2:3,t1:1,0:0])],[l1:1]) ).
+
 cnf(t12,plain,
-    ( s(sK1)
-    | q(b)
-    | ~ p(c) ),
-    inference(extension,[status(thm),path([t1:2,0:0])],[c7]) ).
+    $false,
+    inference(connection,[status(thm),path([t11:1,t9:2,t2:3,t1:1,0:0])],[t9:2,t11:1]) ).
 
 cnf(l2,plain,
     ~ q(b),
     inference(lemma,[status(cth),path([t1:1,0:0]),below(0:0)],[t1:1]) ).
 
 cnf(t13,plain,
-    $false,
-    inference(connection,[status(thm),path([t12:1,t1:2,0:0])],[t12:1,t1:2]) ).
+    ( s(sK1)
+    | q(b)
+    | ~ p(c) ),
+    inference(extension,[status(thm),path([t1:2,0:0])],[c7]) ).
 
+%---- CHANGED t12:1 to t13:1
 cnf(t14,plain,
     $false,
-    inference(lemma_extension,[status(thm),path([l2:1,t12:2,t1:2,0:0])],[l2:1,t12:2]) ).
+    inference(connection,[status(thm),path([t13:1,t1:2,0:0])],[t13:1,t1:2]) ).
 
 cnf(t15,plain,
-    ( p(c)
-    | q(b) ),
-    inference(extension,[status(thm),path([t12:3,t1:2,0:0])],[c4]) ).
+    ~ q(b),
+    inference(lemma_extension,[status(thm),path([t13:2,t1:2,0:0])],[l2:1]) ).
 
+%--- CHANGED first t13:2 to t15:1
 cnf(t16,plain,
     $false,
-    inference(connection,[status(thm),path([t15:1,t12:3,t1:2,0:0])],[t15:1,t2:3]) ).
+    inference(connection,[status(thm),path([t15:1,t13:2,t1:2,0:0])],[t13:2,t15:1]) ).
 
+%--- CHANGED FROM t12:3 to t13:3
 cnf(t17,plain,
+    ( p(c)
+    | q(b) ),
+    inference(extension,[status(thm),path([t13:3,t1:2,0:0])],[c4]) ).
+
+%--- CHANGED FROM t15:1 to t17:1 and t12:3 to t13:3
+cnf(t18,plain,
     $false,
-    inference(lemma_extension,[status(thm),path([l2:1,t15:2,t12:3,t1:2,0:0])],[l2:1,t15:2]) ).
+    inference(connection,[status(thm),path([t17:1,t13:3,t1:2,0:0])],[t15:1,t2:3]) ).
+
+cnf(t19,plain,
+    ~ q(b),
+    inference(lemma_extension,[status(thm),path([t17:2,t13:3,t1:2,0:0])],[l2:1]) ).
+
+%--- CHANGED FROM t19:2 to t19:1 AND INSERTED t17:2
+cnf(t20,plain,
+    $false,
+    inference(lemma_extension,[status(thm),path([t19:1,t17:2,t13:3,t1:2,0:0])],[l2:1,t15:2]) ).

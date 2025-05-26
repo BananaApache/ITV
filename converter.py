@@ -87,14 +87,25 @@ def convert_cnfs(filename="input.s", output_filename="new_output.s"):
     output = [STARTING_LINE]
 
     for cnf in all_cnfs:
-        if "|" in cnf['formula']: # for formulas
+        if "(" in cnf['formula'] or ")" in cnf['formula']: # for formulas
             literals = cnf['formula'].split("|")
             for i, literal in enumerate(literals):
                 new_formula = f"""
-    fof('{cnf['name']}:{i + 1}',plain, 
-        {literal}, 
-        inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']), 
-        [] ).
+fof('{cnf['name']}:{i + 1}',plain, 
+    {literal},
+    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']), 
+    [] ).
+                """
+                output.append(new_formula)
+                
+        if "(" in cnf['formula'] or ")" in cnf['formula'] and cnf['inference_rule'] == "lemma_extension": # for formulas lemma_extension
+            literals = cnf['formula'].split("|")
+            for i, literal in enumerate(literals):
+                new_formula = f"""
+fof('{cnf['name']}:{i + 1}',plain, 
+    {literal},
+    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}','{cnf['parents'].strip("[]").split(",")[0]}']), 
+    [] ).
                 """
                 output.append(new_formula)
         
@@ -102,39 +113,38 @@ def convert_cnfs(filename="input.s", output_filename="new_output.s"):
             # connection
             if cnf['inference_rule'] == "connection":
                 new_formula = f"""
-    tcf({cnf['name']},conjecture, 
-        {cnf['formula']}, 
-        inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']), 
-        [] ).
+tcf({cnf['name']},conjecture,
+    {cnf['formula']},
+    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']),
+    [] ).
                 """
             
             # lemma_extension
             elif cnf['inference_rule'] == "lemma_extension":
                 new_formula = f"""
-    tcf({cnf['name']},conjecture, 
-        {cnf['formula']},
-        inference({cnf['inference_rule']},[level({len(cnf['path']) - 1})],{"[" + ",".join(f"'{item}'" for item in cnf['parents'].strip("[]").split(",")) + "]"}), 
-        [] ).
+tcf({cnf['name']},conjecture,
+    {cnf['formula']},
+    inference({cnf['inference_rule']},[level({len(cnf['path']) - 1})],['{cnf['path'][0]}']),
+    [] ).
                 """
             
             # reduction
             else:
                 new_formula = f"""
-    tcf({cnf['name']},conjecture, 
-        {cnf['formula']}, 
-        inference({cnf['inference_rule']},[level({len(cnf['path'])})],{"[" + ",".join(f"'{item}'" for item in cnf['parents'].strip("[]").split(",")) + "]"}), 
-        [] ).
+tcf({cnf['name']},conjecture, 
+    {cnf['formula']}, 
+    inference({cnf['inference_rule']},[level({len(cnf['path'])})],{"[" + ",".join(f"'{item}'" for item in cnf['parents'].strip("[]").split(",")) + "]"}), 
+    [] ).
                 """
 
             output.append(new_formula)
 
         if cnf['inference_rule'] == "lemma": # for lemmas
-            
             new_formula = f"""
-    thf('{cnf['name']}:{1}',axiom, 
-        {cnf['formula']}, 
-        inference({cnf['inference_rule']},[level({len(cnf['path']) - 1})],['{cnf['path'][0]}'], nextTo('{cnf['path'][0]}')), 
-        [] ).
+thf('{cnf['name']}:{1}',axiom, 
+    {cnf['formula']}, 
+    inference({cnf['inference_rule']},[level({len(cnf['path']) - 1})],['{cnf['path'][0]}'], nextTo('{cnf['path'][0]}')), 
+    [] ).
             """
             output.append(new_formula)
 
