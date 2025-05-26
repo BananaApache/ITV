@@ -35,6 +35,10 @@ function getNodeShape(node) {
         return "box";
     }
 
+	if (node.inference_record.includes("lemma_extension")) {
+		return "invtriangle";
+	}
+
 	return shapeMap[node.role];
 }
 
@@ -46,7 +50,12 @@ function getNodeColor(node) {
 		fof: "green",
 		cnf: "red"
 	}
-	return colorMap[node.type];
+	if (node.formula == "$false") {
+		return "red";
+	}
+	else {
+		return colorMap[node.type];
+	}
 }
 
 function scaleFromInterestingness(interestingness) {
