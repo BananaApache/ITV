@@ -56,12 +56,16 @@ function descendants(node, depth = 0, proofObj = window.proof){
 window.descendants = descendants;
 
 function assignColorToNode(color, node) {
+	// console.log("assigning color", color, "to node", node.name);
+	
 	try{
 		node.graphviz.fillcolor = color;
 		node.svgNode.style.fill = color;
 	}
 	catch(e){}
 }
+
+window.assignColorToNode = assignColorToNode;
 
 function nodeIsUninteresting(node){
 	// the final conclusion is always interesting.
@@ -104,6 +108,8 @@ function getNodeName(hovered){
 	return window.interpretation ? hovered.querySelector("text").getAttribute("proofKey") : hovered.querySelector("title").innerHTML;
 }
 
+window.getNodeName = getNodeName;
+
 function showGV(dot) {
 	showLoadingSpinner()
 	graphviz.renderDot(htmlDecode(dot));
@@ -127,6 +133,8 @@ function showGV(dot) {
 
 
 function nodeHoverEventListener(e) {
+	// console.log("hovered node", e.currentTarget);
+	
 	if (e.buttons != 0) {
 		return
 	}
@@ -220,6 +228,23 @@ function nodeHoverEventListener(e) {
 
 	if(node.graphviz.fillcolor != "#000000")
 		assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
+
+
+	//@========================================================================
+	//~ D&E added for hoverNode functionality
+	if (node.tptp.includes("hoverNode")) {
+		const match = node.tptp.match(/hoverNode\((('[^']+'))\)/)
+
+		if (match) {
+			const hoverNodeName = match[1];
+			// console.log("hoverNodeName", hoverNodeName);
+			
+			assignColorToNode("#4eff20", proof[hoverNodeName]);
+		}
+	}
+	//@========================================================================
+
+
 }
 
 
