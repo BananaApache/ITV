@@ -94,7 +94,7 @@ def convert_cnfs(filename="input.s", output_filename="new_output.s"):
                     new_formula = f"""
 fof('{cnf['name']}:{i + 1}',plain, 
     {literal},
-    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}'], nextTo('{cnf['name']}:{i + 2}')), 
+    inference({cnf['inference_rule']},[level({len(cnf['path'])}), nextTo('{cnf['name']}:{i + 2}')],['{cnf['path'][0]}']), 
     [] ).
                 """
                     output.append(new_formula)
@@ -115,7 +115,7 @@ fof('{cnf['name']}:{i + 1}',plain,
                 new_formula = f"""
 fof('{cnf['name']}:{i + 1}',plain,
     {literal},
-    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}'], hoverNode('{cnf['parents'].strip("[]")}')), 
+    inference({cnf['inference_rule']},[level({len(cnf['path'])}), hoverNode('{cnf['parents'].strip("[]")}')],['{cnf['path'][0]}']), 
     [] ).
                 """
                 output.append(new_formula)
@@ -138,7 +138,7 @@ tcf({cnf['name']},conjecture,
                 new_formula = f"""
 tcf({cnf['name']},conjecture,
     {cnf['formula']},
-    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}'], hoverNode('{cnf['parents'].strip("[]").split(",")[0]}')),
+    inference({cnf['inference_rule']},[level({len(cnf['path'])}), hoverNode('{cnf['parents'].strip("[]").split(",")[0]}')],['{cnf['path'][0]}']),
     [] ).
                 """
                 output.append(new_formula)
@@ -157,7 +157,7 @@ tcf({cnf['name']},conjecture,
                 new_formula = f"""
 tcf({cnf['name']},conjecture, 
     {cnf['formula']}, 
-    inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}'], hoverNode('{new_parents[0]}')), 
+    inference({cnf['inference_rule']},[level({len(cnf['path'])}), hoverNode('{new_parents[0]}')],['{cnf['path'][0]}']), 
     [] ).
                 """
                 output.append(new_formula)
@@ -167,7 +167,7 @@ tcf({cnf['name']},conjecture,
             new_formula = f"""
 thf('{cnf['name']}:{1}',axiom, 
     {cnf['formula']}, 
-    inference({cnf['inference_rule']},[level({len(cnf['path']) - 1})],['{cnf['path'][0]}'], nextTo('{cnf['path'][0]}')), 
+    inference({cnf['inference_rule']},[level({len(cnf['path']) - 1}), nextTo('{cnf['path'][0]}')],['{cnf['path'][0]}']), 
     [] ).
             """
             output.append(new_formula)
