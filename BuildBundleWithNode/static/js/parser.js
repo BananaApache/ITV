@@ -6,6 +6,28 @@ import {default as Lexer} from './TPTPLexer';
 import {default as Parser} from './TPTPParser';
 import {default as Listener} from './TPTPListener';
 
+const body = document.body;
+
+// Preconnect for Google Fonts
+const preconnect1 = document.createElement('link');
+preconnect1.rel = 'preconnect';
+preconnect1.href = 'https://fonts.googleapis.com';
+
+const preconnect2 = document.createElement('link');
+preconnect2.rel = 'preconnect';
+preconnect2.href = 'https://fonts.gstatic.com';
+preconnect2.crossOrigin = '';
+
+const stylesheet = document.createElement('link');
+stylesheet.rel = 'stylesheet';
+stylesheet.href = 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap';
+
+// Insert at the start of <body>
+body.prepend(stylesheet);
+body.prepend(preconnect2);
+body.prepend(preconnect1);
+
+
 function stripParens(formula){
 	return formula.replace(/\s+/g,'').replace(/[()]/g, '');
 }
@@ -365,7 +387,7 @@ let proofToGV = function (nodes) {
 	}
 
 	gvLines.push("digraph G {");
-	gvLines.push("node [style=filled];");
+	gvLines.push('node [style=filled, fontname="JetBrains Mono", fontsize=10];');
 	gvLines.push("newrank=\"true\"");
 
     // let clusterColor = 'lightgrey';
