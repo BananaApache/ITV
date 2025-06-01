@@ -29,10 +29,11 @@ def get_all_formulas(filename="input.s"):
     return all_formulas
 
 def get_all_cnfs(filename="input.s"):
-    all_formulas = get_all_formulas(filename)
-    all_cnfs = []
-    # might not work for other inferences with more than 3 parameters!!
-    inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
+    try:
+        all_formulas = get_all_formulas(filename)
+        all_cnfs = []
+        # might not work for other inferences with more than 3 parameters!!
+        inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
 
     for formula in all_formulas:
         if formula.startswith("cnf(") and "path" in formula:
@@ -83,6 +84,13 @@ def get_all_cnfs(filename="input.s"):
 
 def convert_cnfs(filename="input.s", output_filename=None):
     all_cnfs = get_all_cnfs(filename)
+    
+    if len(all_cnfs) > 0:
+        noErrors = True
+    else:
+        noErrors = False
+
+
 
     output = [STARTING_LINE]
 
@@ -186,6 +194,25 @@ thf('{cnf['name']}:{1}',axiom,
             print(line.strip())
 
         return output
+
+    if noErrors is True:
+        output[-1] = output[-1] + "\n"
+        with open(output_filename, "w") as f:
+            f.writelines(output)
+#        print("\nFile written successfully.\n")
+#        print(f"Input file: {filename}")
+#        print(f"Output file: {output_filename}")
+        
+        print("% SYZ status Sucess")
+        print(f"% SZS output start ListOfFormulae for {filename}")
+        for line in output:
+            print(line)
+        print(f"% SZS output end ListOfFormulae for {output_filename}")
+
+        return output
+    else:
+        print("% SZS status NoSucess")
+        return []
 
 
 parser = argparse.ArgumentParser(description="Process one input file and one output file.")
