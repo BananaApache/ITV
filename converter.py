@@ -52,7 +52,7 @@ def get_all_cnfs(filename="input.s"):
                     "parents": re.match(inference_pattern, inference).group(3)
                 }
             )
-
+        '''
     for cnf in all_cnfs:
         print(f"Raw Formula: {cnf['raw'].replace(' ', '')}")
         print(f"Name: {cnf['name']}")
@@ -67,7 +67,7 @@ def get_all_cnfs(filename="input.s"):
         
     print("Total formulas:", len(all_formulas))
     print("Converted formulas:", len(all_cnfs))
-
+        '''
     return all_cnfs
 
 #~ if inference_rule is lemma -> then make it thf + axiom
@@ -175,10 +175,14 @@ thf('{cnf['name']}:{1}',axiom,
 
     with open(output_filename, "w") as f:
         f.writelines(output)
-        print("\nFile written successfully.\n")
-        print(f"Input file: {filename}")
-        print(f"Output file: {output_filename}")
-        
+#        print("\nFile written successfully.\n")
+#        print(f"Input file: {filename}")
+#        print(f"Output file: {output_filename}")
+    
+
+    for line in output:
+        print(line)
+
     return output
 
 
