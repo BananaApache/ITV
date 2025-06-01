@@ -172,7 +172,7 @@ thf('{cnf['name']}:{1}',axiom,
             """
             output.append(new_formula)
             continue
-
+    output[-1] = output[-1] + "\n"
     with open(output_filename, "w") as f:
         f.writelines(output)
 #        print("\nFile written successfully.\n")
