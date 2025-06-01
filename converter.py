@@ -1,6 +1,8 @@
 
 import re
 import argparse
+import requests
+from bs4 import BeautifulSoup as bs
 
 STARTING_LINE = """tcf('0:0',conjecture, 
     $true, 
@@ -29,11 +31,10 @@ def get_all_formulas(filename="input.s"):
     return all_formulas
 
 def get_all_cnfs(filename="input.s"):
-    try:
-        all_formulas = get_all_formulas(filename)
-        all_cnfs = []
-        # might not work for other inferences with more than 3 parameters!!
-        inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
+    all_formulas = get_all_formulas(filename)
+    all_cnfs = []
+    # might not work for other inferences with more than 3 parameters!!
+    inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
 
     for formula in all_formulas:
         if formula.startswith("cnf(") and "path" in formula:
@@ -84,13 +85,6 @@ def get_all_cnfs(filename="input.s"):
 
 def convert_cnfs(filename="input.s", output_filename=None):
     all_cnfs = get_all_cnfs(filename)
-    
-    if len(all_cnfs) > 0:
-        noErrors = True
-    else:
-        noErrors = False
-
-
 
     output = [STARTING_LINE]
 
@@ -184,36 +178,159 @@ thf('{cnf['name']}:{1}',axiom,
     if output_filename is not None:
         with open(output_filename, "w") as f:
             f.writelines(output)
-            print("\nFile written successfully.\n")
-            print(f"Input file: {filename}")
-            print(f"Output file: {output_filename}")
-            
-        return output
+            # print("\nFile written successfully.\n")
+            # print(f"Input file: {filename}")
+            # print(f"Output file: {output_filename}")
+
+    for line in output:
+        print(line.strip())
+
+    return output
+    
+
+def has_errors(input_file):
+    f = open(input_file, 'r')
+    inp = f.read()
+    f.close()
+
+    files = {
+        'TPTPProblem': (None, ''),
+        'ProblemSource': (None, 'FORMULAE'),
+        'FORMULAEProblem': (None, inp),
+        'UPLOADProblem': ('new_input.s', '', 'application/octet-stream'),
+        'FormulaURL': (None, ''),
+        'InputFormat': (None, 'TPTP'),
+        'QuietFlag': (None, '-q01'),
+        'SubmitButton': (None, 'ProcessProblem'),
+        'TimeLimit___AddTypes---1.2.4': (None, '60'),
+        'Transform___AddTypes---1.2.4': (None, 'none'),
+        'Format___AddTypes---1.2.4': (None, 'tptp:raw'),
+        'Command___AddTypes---1.2.4': (None, 'run_addtypes %s'),
+        'TimeLimit___ASk---0.2.3': (None, '60'),
+        'Transform___ASk---0.2.3': (None, 'none'),
+        'Format___ASk---0.2.3': (None, 'tptp:raw'),
+        'Command___ASk---0.2.3': (None, 'run_ASk %s'),
+        'TimeLimit___BNFParser---0.0': (None, '60'),
+        'Transform___BNFParser---0.0': (None, 'none'),
+        'Format___BNFParser---0.0': (None, 'tptp:raw'),
+        'Command___BNFParser---0.0': (None, 'BNFParser %s'),
+        'TimeLimit___BNFParserTree---0.0': (None, '60'),
+        'Transform___BNFParserTree---0.0': (None, 'none'),
+        'Format___BNFParserTree---0.0': (None, 'tptp:raw'),
+        'Command___BNFParserTree---0.0': (None, 'BNFParserTree %s'),
+        'TimeLimit___CheckTyping---0.0': (None, '60'),
+        'Transform___CheckTyping---0.0': (None, 'none'),
+        'Format___CheckTyping---0.0': (None, 'tptp:raw'),
+        'Command___CheckTyping---0.0': (None, 'CheckTyping -all %s'),
+        'TimeLimit___ECNF---3.2.5': (None, '60'),
+        'Transform___ECNF---3.2.5': (None, 'none'),
+        'Format___ECNF---3.2.5': (None, 'tptp:raw'),
+        'Command___ECNF---3.2.5': (None, 'run_ECNF %d %s'),
+        'TimeLimit___EGround---3.2.5': (None, '60'),
+        'Transform___EGround---3.2.5': (None, 'add_equality'),
+        'Format___EGround---3.2.5': (None, 'tptp:raw'),
+        'Command___EGround---3.2.5': (None, 'eground --tstp-in --tstp-out --silent --resources-info --split-tries=100 --memory-limit=200 --soft-cpu-limit=%d --add-one-instance --constraints %s'),
+        'TimeLimit___ESelect---3.2.5': (None, '60'),
+        'Transform___ESelect---3.2.5': (None, 'none'),
+        'Format___ESelect---3.2.5': (None, 'tptp:raw'),
+        'Command___ESelect---3.2.5': (None, 'eprover --sine=Auto --prune %s'),
+        'TimeLimit___GetSymbols---0.0': (None, '60'),
+        'Transform___GetSymbols---0.0': (None, 'none'),
+        'Format___GetSymbols---0.0': (None, 'tptp:raw'),
+        'Command___GetSymbols---0.0': (None, 'GetSymbols -all %s'),
+        'TimeLimit___Horn2UEQ---0.4.1': (None, '60'),
+        'Transform___Horn2UEQ---0.4.1': (None, 'none'),
+        'Format___Horn2UEQ---0.4.1': (None, 'tptp:raw'),
+        'Command___Horn2UEQ---0.4.1': (None, 'jukebox_horn2ueq %s'),
+        'TimeLimit___Isabelle---2FOF': (None, '60'),
+        'Transform___Isabelle---2FOF': (None, 'none'),
+        'Format___Isabelle---2FOF': (None, 'tptp'),
+        'Command___Isabelle---2FOF': (None, 'run_isabelle_2X FOF %s'),
+        'TimeLimit___Isabelle---2TF0': (None, '60'),
+        'Transform___Isabelle---2TF0': (None, 'none'),
+        'Format___Isabelle---2TF0': (None, 'tptp'),
+        'Command___Isabelle---2TF0': (None, 'run_isabelle_2X TF0 %s'),
+        'TimeLimit___Isabelle---2TH0': (None, '60'),
+        'Transform___Isabelle---2TH0': (None, 'none'),
+        'Format___Isabelle---2TH0': (None, 'tptp'),
+        'Command___Isabelle---2TH0': (None, 'run_isabelle_2X TH0 %s'),
+        'TimeLimit___Leo-III-STC---1.7.18': (None, '60'),
+        'Transform___Leo-III-STC---1.7.18': (None, 'none'),
+        'Format___Leo-III-STC---1.7.18': (None, 'tptp:raw'),
+        'Command___Leo-III-STC---1.7.18': (None, 'run_Leo-III %s %d STC'),
+        'TimeLimit___Monotonox---0.4.1': (None, '60'),
+        'Transform___Monotonox---0.4.1': (None, 'none'),
+        'Format___Monotonox---0.4.1': (None, 'tptp:raw'),
+        'Command___Monotonox---0.4.1': (None, 'jukebox monotonox %s'),
+        'TimeLimit___Monotonox-2CNF---0.4.1': (None, '60'),
+        'Transform___Monotonox-2CNF---0.4.1': (None, 'none'),
+        'Format___Monotonox-2CNF---0.4.1': (None, 'tptp:raw'),
+        'Command___Monotonox-2CNF---0.4.1': (None, 'jukebox_cnf %s'),
+        'TimeLimit___Monotonox-2FOF---0.4.1': (None, '60'),
+        'Transform___Monotonox-2FOF---0.4.1': (None, 'none'),
+        'Format___Monotonox-2FOF---0.4.1': (None, 'tptp:raw'),
+        'Command___Monotonox-2FOF---0.4.1': (None, 'jukebox_fof %s'),
+        'TimeLimit___NTFLET---1.8.5': (None, '60'),
+        'Transform___NTFLET---1.8.5': (None, 'none'),
+        'Format___NTFLET---1.8.5': (None, 'tptp:raw'),
+        'Command___NTFLET---1.8.5': (None, 'run_embed %s'),
+        'TimeLimit___ProblemStats---1.0': (None, '60'),
+        'Transform___ProblemStats---1.0': (None, 'none'),
+        'Format___ProblemStats---1.0': (None, 'tptp:raw'),
+        'Command___ProblemStats---1.0': (None, 'run_MakeListStats %s'),
+        'TimeLimit___Prophet---0.0': (None, '60'),
+        'Transform___Prophet---0.0': (None, 'none'),
+        'Format___Prophet---0.0': (None, 'tptp'),
+        'Command___Prophet---0.0': (None, 'prophet %s'),
+        'TimeLimit___Saffron---4.5': (None, '60'),
+        'Transform___Saffron---4.5': (None, 'none'),
+        'Format___Saffron---4.5': (None, 'tptp:raw'),
+        'Command___Saffron---4.5': (None, 'run_saffron %s %d'),
+        'TimeLimit___SPCForProblem---1.0': (None, '60'),
+        'Transform___SPCForProblem---1.0': (None, 'none'),
+        'Format___SPCForProblem---1.0': (None, 'tptp:raw'),
+        'Command___SPCForProblem---1.0': (None, 'run_SPCForProblem %s'),
+        'TimeLimit___TPII---0.0': (None, '60'),
+        'Transform___TPII---0.0': (None, 'none'),
+        'Format___TPII---0.0': (None, 'tptp:raw'),
+        'Command___TPII---0.0': (None, 'TPII %s'),
+        'TimeLimit___TPTP2JSON---0.1': (None, '60'),
+        'Transform___TPTP2JSON---0.1': (None, 'none'),
+        'Format___TPTP2JSON---0.1': (None, 'tptp:raw'),
+        'Command___TPTP2JSON---0.1': (None, 'run_tptp2json %s'),
+        'TimeLimit___TPTP2X---0.0': (None, '60'),
+        'Transform___TPTP2X---0.0': (None, 'none'),
+        'Format___TPTP2X---0.0': (None, 'tptp:raw'),
+        'Command___TPTP2X---0.0': (None, 'tptp2X -q2 -d- %s'),
+        'TimeLimit___TPTP4X---0.0': (None, '60'),
+        'Transform___TPTP4X---0.0': (None, 'none'),
+        'Format___TPTP4X---0.0': (None, 'tptp:raw'),
+        'Command___TPTP4X---0.0': (None, 'tptp4X %s'),
+        'TimeLimit___VCNF---4.8': (None, '60'),
+        'Transform___VCNF---4.8': (None, 'none'),
+        'Format___VCNF---4.8': (None, 'tptp:raw'),
+        'Command___VCNF---4.8': (None, 'run_vclausify_rel %s %d'),
+        'TimeLimit___VSelect---4.4': (None, '60'),
+        'Transform___VSelect---4.4': (None, 'none'),
+        'Format___VSelect---4.4': (None, 'tptp:raw'),
+        'Command___VSelect---4.4': (None, 'run_sine_select %s'),
+        'TimeLimit___Why3-FOF---0.85': (None, '60'),
+        'Transform___Why3-FOF---0.85': (None, 'none'),
+        'Format___Why3-FOF---0.85': (None, 'tptp:raw'),
+        'Command___Why3-FOF---0.85': (None, 'bin/why3 prove -F tptp -C /home/tptp/Systems/Why3---0.85/why3.conf -D /home/tptp/Systems/Why3---0.85/Source/drivers/tptp.gen %s'),
+        'TimeLimit___Why3-TF0---0.85': (None, '60'),
+        'Transform___Why3-TF0---0.85': (None, 'none'),
+        'Format___Why3-TF0---0.85': (None, 'tptp:raw'),
+        'Command___Why3-TF0---0.85': (None, 'bin/why3 prove -F tptp -C /home/tptp/Systems/Why3---0.85/why3.conf -D /home/tptp/Systems/Why3---0.85/Source/drivers/tptp-tff0.drv %s'),
+    }
+
+    response = requests.post('https://tptp.org/cgi-bin/SystemOnTPTPFormReply', files=files)
+    soup = bs(response.text, 'html.parser')
+
+    if "% No errors" in soup.select_one("body").text:
+        return (False, soup.select_one("body").text)
     else:
-        for line in output:
-            print(line.strip())
-
-        return output
-
-    if noErrors is True:
-        output[-1] = output[-1] + "\n"
-        with open(output_filename, "w") as f:
-            f.writelines(output)
-#        print("\nFile written successfully.\n")
-#        print(f"Input file: {filename}")
-#        print(f"Output file: {output_filename}")
-        
-        print("% SYZ status Sucess")
-        print(f"% SZS output start ListOfFormulae for {filename}")
-        for line in output:
-            print(line)
-        print(f"% SZS output end ListOfFormulae for {output_filename}")
-
-        return output
-    else:
-        print("% SZS status NoSucess")
-        return []
-
+        return (True, soup.select_one("body").text)
 
 parser = argparse.ArgumentParser(description="Process one input file and one output file.")
 parser.add_argument("input_file", help="Path to the input file")
@@ -221,8 +338,16 @@ parser.add_argument("output_file", nargs='?', help="Path to the output file (opt
 
 args = parser.parse_args()
 
-if args.output_file:
-    convert_cnfs(args.input_file, args.output_file)
+has_error, error_text = has_errors(args.input_file)
+
+if not has_error:
+    print(f"% SZS status Success\n% SZS output start ListOfFormulae for {args.input_file}")
+    if args.output_file:
+        convert_cnfs(args.input_file, args.output_file)
+    else:
+        convert_cnfs(args.input_file)
+    print(f"% SZS output end ListOfFormulae for {args.input_file}")
 else:
-    convert_cnfs(args.input_file)
+    print(f"% SZS status NoSuccess")
+    print(error_text)
 
