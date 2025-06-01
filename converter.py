@@ -29,46 +29,51 @@ def get_all_formulas(filename="input.s"):
     return all_formulas
 
 def get_all_cnfs(filename="input.s"):
-    all_formulas = get_all_formulas(filename)
-    all_cnfs = []
-    # might not work for other inferences with more than 3 parameters!!
-    inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
+    try:
+        all_formulas = get_all_formulas(filename)
+        all_cnfs = []
+        # might not work for other inferences with more than 3 parameters!!
+        inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
 
-    for formula in all_formulas:
-        if formula.startswith("cnf(") and "path" in formula:
-            cut_formula = formula[4:][:-3]
-            cnf_formula = cut_formula.split(",")[2].replace(" ", "")
-            inference = ",".join(cut_formula.split(",")[3:])
-            all_cnfs.append(
-                {
-                    "raw": formula,
-                    "name": cut_formula.split(",")[0],
-                    "formula_role": cut_formula.split(",")[1],
-                    "formula": cnf_formula[1:-1].strip() if cnf_formula.strip().startswith('(') and cnf_formula.strip().endswith(')') else cnf_formula.strip(),
-                    # "annotations": inference,
-                    "inference_rule": re.match(inference_pattern, inference).group(1),
-                    # "useful_info": re.match(pattern, inference).group(2),
-                    "path": [item.strip() for item in re.search(r'path\(\[([^\]]*)\]\)', inference).group(1).split(',')],
-                    "parents": re.match(inference_pattern, inference).group(3)
-                }
-            )
-        '''
-    for cnf in all_cnfs:
-        print(f"Raw Formula: {cnf['raw'].replace(' ', '')}")
-        print(f"Name: {cnf['name']}")
-        print(f"Formula Role: {cnf['formula_role']}")
-        print(f"Formula: {cnf['formula']}")
-        # print(f"Annotations: {cnf['annotations']}")
-        print(f"Inference Rule: {cnf['inference_rule']}")
-        # print(f"Useful Info: {cnf['useful_info']}")
-        print(f"Path: {cnf['path']}")
-        print(f"Parents: {cnf['parents']}")
-        print()
-        
-    print("Total formulas:", len(all_formulas))
-    print("Converted formulas:", len(all_cnfs))
-        '''
-    return all_cnfs
+        for formula in all_formulas:
+            if formula.startswith("cnf(") and "path" in formula:
+                cut_formula = formula[4:][:-3]
+                cnf_formula = cut_formula.split(",")[2].replace(" ", "")
+                inference = ",".join(cut_formula.split(",")[3:])
+                all_cnfs.append(
+                    {
+                        "raw": formula,
+                        "name": cut_formula.split(",")[0],
+                        "formula_role": cut_formula.split(",")[1],
+                        "formula": cnf_formula[1:-1].strip() if cnf_formula.strip().startswith('(') and cnf_formula.strip().endswith(')') else cnf_formula.strip(),
+                        # "annotations": inference,
+                        "inference_rule": re.match(inference_pattern, inference).group(1),
+                        # "useful_info": re.match(pattern, inference).group(2),
+                        "path": [item.strip() for item in re.search(r'path\(\[([^\]]*)\]\)', inference).group(1).split(',')],
+                        "parents": re.match(inference_pattern, inference).group(3)
+                    }
+                )
+            '''
+        for cnf in all_cnfs:
+            print(f"Raw Formula: {cnf['raw'].replace(' ', '')}")
+            print(f"Name: {cnf['name']}")
+            print(f"Formula Role: {cnf['formula_role']}")
+            print(f"Formula: {cnf['formula']}")
+            # print(f"Annotations: {cnf['annotations']}")
+            print(f"Inference Rule: {cnf['inference_rule']}")
+            # print(f"Useful Info: {cnf['useful_info']}")
+            print(f"Path: {cnf['path']}")
+            print(f"Parents: {cnf['parents']}")
+            print()
+            
+        print("Total formulas:", len(all_formulas))
+        print("Converted formulas:", len(all_cnfs))
+            '''
+        return all_cnfs
+    except Exception as e:
+        return []
+
+    
 
 #~ if inference_rule is lemma -> then make it thf + axiom
 #~ if formula is $true OR $false -> then make it tcf + conjecture
@@ -83,6 +88,13 @@ def get_all_cnfs(filename="input.s"):
 
 def convert_cnfs(filename="input.s", output_filename="new_output.s"):
     all_cnfs = get_all_cnfs(filename)
+    
+    if len(all_cnfs) > 0:
+        noErrors = True
+    else:
+        noErrors = False
+
+
 
     output = [STARTING_LINE]
 
@@ -172,18 +184,25 @@ thf('{cnf['name']}:{1}',axiom,
             """
             output.append(new_formula)
             continue
-    output[-1] = output[-1] + "\n"
-    with open(output_filename, "w") as f:
-        f.writelines(output)
+
+    if noErrors is True:
+        output[-1] = output[-1] + "\n"
+        with open(output_filename, "w") as f:
+            f.writelines(output)
 #        print("\nFile written successfully.\n")
 #        print(f"Input file: {filename}")
 #        print(f"Output file: {output_filename}")
-    
+        
+        print("% SYZ status Sucess")
+        print(f"% SZS output start ListOfFormulae for {filename}")
+        for line in output:
+            print(line)
+        print(f"% SZS output end ListOfFormulae for {output_filename}")
 
-    for line in output:
-        print(line)
-
-    return output
+        return output
+    else:
+        print("% SZS status NoSucess")
+        return []
 
 
 parser = argparse.ArgumentParser(description="Process one input file and one output file.")
