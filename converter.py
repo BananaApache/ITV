@@ -53,20 +53,20 @@ def get_all_cnfs(filename="input.s"):
                 }
             )
 
-    for cnf in all_cnfs:
-        print(f"Raw Formula: {cnf['raw'].replace(' ', '')}")
-        print(f"Name: {cnf['name']}")
-        print(f"Formula Role: {cnf['formula_role']}")
-        print(f"Formula: {cnf['formula']}")
-        # print(f"Annotations: {cnf['annotations']}")
-        print(f"Inference Rule: {cnf['inference_rule']}")
-        # print(f"Useful Info: {cnf['useful_info']}")
-        print(f"Path: {cnf['path']}")
-        print(f"Parents: {cnf['parents']}")
-        print()
+    # for cnf in all_cnfs:
+    #     print(f"Raw Formula: {cnf['raw'].replace(' ', '')}")
+    #     print(f"Name: {cnf['name']}")
+    #     print(f"Formula Role: {cnf['formula_role']}")
+    #     print(f"Formula: {cnf['formula']}")
+    #     # print(f"Annotations: {cnf['annotations']}")
+    #     print(f"Inference Rule: {cnf['inference_rule']}")
+    #     # print(f"Useful Info: {cnf['useful_info']}")
+    #     print(f"Path: {cnf['path']}")
+    #     print(f"Parents: {cnf['parents']}")
+    #     print()
         
-    print("Total formulas:", len(all_formulas))
-    print("Converted formulas:", len(all_cnfs))
+    # print("Total formulas:", len(all_formulas))
+    # print("Converted formulas:", len(all_cnfs))
 
     return all_cnfs
 
@@ -81,7 +81,7 @@ def get_all_cnfs(filename="input.s"):
 #~ TEMPLATE: fof('t1:1', plain, q(b)   , inference(extension,[level(1)],['0:0']), []      ).
 #~                name , role , formula, annotations                            , parents
 
-def convert_cnfs(filename="input.s", output_filename="new_output.s"):
+def convert_cnfs(filename="input.s", output_filename=None):
     all_cnfs = get_all_cnfs(filename)
 
     output = [STARTING_LINE]
@@ -172,21 +172,30 @@ thf('{cnf['name']}:{1}',axiom,
             """
             output.append(new_formula)
             continue
-
-    with open(output_filename, "w") as f:
-        f.writelines(output)
-        print("\nFile written successfully.\n")
-        print(f"Input file: {filename}")
-        print(f"Output file: {output_filename}")
         
-    return output
+    if output_filename is not None:
+        with open(output_filename, "w") as f:
+            f.writelines(output)
+            print("\nFile written successfully.\n")
+            print(f"Input file: {filename}")
+            print(f"Output file: {output_filename}")
+            
+        return output
+    else:
+        for line in output:
+            print(line.strip())
+
+        return output
 
 
 parser = argparse.ArgumentParser(description="Process one input file and one output file.")
 parser.add_argument("input_file", help="Path to the input file")
-parser.add_argument("output_file", help="Path to the output file")
+parser.add_argument("output_file", nargs='?', help="Path to the output file (optional)")
 
 args = parser.parse_args()
 
-convert_cnfs(args.input_file, args.output_file)
+if args.output_file:
+    convert_cnfs(args.input_file, args.output_file)
+else:
+    convert_cnfs(args.input_file)
 
