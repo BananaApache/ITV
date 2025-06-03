@@ -1,6 +1,13 @@
 # ITV
 
 
+# Installation
+
+> Linux:
+`pip install --user -r requirements.txt` or `pip3 install --user -r requirements.txt`
+
+> MacOS
+`pip install -r requirements.txt` or `pip3 install -r requirements.txt`
 
 ![Alt text](./diagram.png)
 

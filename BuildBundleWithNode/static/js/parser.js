@@ -60,7 +60,7 @@ function getNodeShape(node) {
 	//@=========================================================================================
 	//~ D&E added to get lemma_extension shape
 	if (node.inference_record.includes("lemma_extension")) {
-		return "invtriangle";
+		return "triangle";
 	}
 	//@=========================================================================================
 

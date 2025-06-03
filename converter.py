@@ -2,9 +2,9 @@
 import re
 import argparse
 import requests
-from bs4 import BeautifulSoup as bs
 
-STARTING_LINE = """tcf('0:0',conjecture, 
+STARTING_LINE = """%----Derivation
+tcf('0:0',conjecture, 
     $true, 
     introduced(language,[level(0)],[]),
     [] ).
@@ -32,7 +32,7 @@ def get_all_formulas(filename="input.s"):
 
 def get_all_cnfs(filename="input.s"):
     all_formulas = get_all_formulas(filename)
-    all_cnfs = []
+    all_cnfs = { 'cnfs' : [], 'others': [] }
     # might not work for other inferences with more than 3 parameters!!
     inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
 
@@ -41,7 +41,7 @@ def get_all_cnfs(filename="input.s"):
             cut_formula = formula[4:][:-3]
             cnf_formula = cut_formula.split(",")[2].replace(" ", "")
             inference = ",".join(cut_formula.split(",")[3:])
-            all_cnfs.append(
+            all_cnfs['cnfs'].append(
                 {
                     "raw": formula,
                     "name": cut_formula.split(",")[0],
@@ -54,6 +54,8 @@ def get_all_cnfs(filename="input.s"):
                     "parents": re.match(inference_pattern, inference).group(3)
                 }
             )
+        else:
+            all_cnfs['others'].append(formula + "\n")
 
     # for cnf in all_cnfs:
     #     print(f"Raw Formula: {cnf['raw'].replace(' ', '')}")
@@ -83,10 +85,15 @@ def get_all_cnfs(filename="input.s"):
 #~ TEMPLATE: fof('t1:1', plain, q(b)   , inference(extension,[level(1)],['0:0']), []      ).
 #~                name , role , formula, annotations                            , parents
 
-def convert_cnfs(filename="input.s", output_filename=None):
-    all_cnfs = get_all_cnfs(filename)
+def convert_cnfs(filename="input.s", output_filename=None, delete=False):
+    all_formulas = get_all_cnfs(filename)
 
-    output = [STARTING_LINE]
+    all_cnfs = all_formulas['cnfs']
+
+    if delete:
+        output = [STARTING_LINE]
+    else:
+        output = all_formulas['others'] + [STARTING_LINE]
 
     for cnf in all_cnfs:
         if ("(" in cnf['formula'] or ")" in cnf['formula']) and cnf['inference_rule'] != "lemma_extension" and cnf['inference_rule'] != "lemma": # for formulas
@@ -325,16 +332,23 @@ def has_errors(input_file):
     }
 
     response = requests.post('https://tptp.org/cgi-bin/SystemOnTPTPFormReply', files=files)
-    soup = bs(response.text, 'html.parser')
+    match = re.search(r'<body[^>]*>(.*?)</body>', response.text, re.DOTALL | re.IGNORECASE)
 
-    if "% No errors" in soup.select_one("body").text:
-        return (False, soup.select_one("body").text)
+    if match:
+        body_text = match.group(1)
+        if "% No errors" in response.text:
+            return (False, body_text)
+        else:
+            return (True, body_text)
     else:
-        return (True, soup.select_one("body").text)
+        print("Error")
+        exit()
 
 parser = argparse.ArgumentParser(description="Process one input file and one output file.")
 parser.add_argument("input_file", help="Path to the input file")
 parser.add_argument("output_file", nargs='?', help="Path to the output file (optional)")
+parser.add_argument("-d", "--delete", action="store_true",
+                    help="Ignore all annotated formulae before the first 'start' inference")
 
 args = parser.parse_args()
 
@@ -343,9 +357,15 @@ has_error, error_text = has_errors(args.input_file)
 if not has_error:
     print(f"% SZS status Success\n% SZS output start ListOfFormulae for {args.input_file}")
     if args.output_file:
-        convert_cnfs(args.input_file, args.output_file)
+        if args.delete:
+            convert_cnfs(args.input_file, args.output_file, delete=True)
+        else:
+            convert_cnfs(args.input_file, args.output_file, delete=False)
     else:
-        convert_cnfs(args.input_file)
+        if args.delete:
+            convert_cnfs(args.input_file, delete=True)
+        else:
+            convert_cnfs(args.input_file, delete=False)
     print(f"% SZS output end ListOfFormulae for {args.input_file}")
 else:
     print(f"% SZS status NoSuccess")
