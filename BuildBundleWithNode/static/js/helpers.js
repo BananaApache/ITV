@@ -152,6 +152,7 @@ function nodeHoverEventListener(e) {
 		interestingnessHTML = `<b>Interestingness: </b>${node.info.interesting}<br>`;
 	}
 
+	// this is changing nodeInfo inside settings
 	nodeInfo.innerHTML = `<hr>
 		<b>Name:</b> ${node['name']}<br>
 		<b>Type:</b> ${node['type']}<br>
@@ -199,7 +200,6 @@ function nodeHoverEventListener(e) {
 		return `#${hex(r)}${hex(g)}${hex(b)}`;
 	}
 
-
 	let anc = ancestors(node);
 	let minDepth = 0;
 	anc.forEach(function (a) {
@@ -216,6 +216,42 @@ function nodeHoverEventListener(e) {
 		}
 	});
 
+	//@========================================================================
+	//~ D&E added for hoverParent functionality
+	if (node.tptp.includes("hoverParent")) {
+		let ignoredAnc = [];
+
+		const match = node.tptp.match(/hoverParent\((("[^']+"))\)/)
+		if (match) {
+			const hoverParentName = match[1].replaceAll('"', '');
+			// console.log("hoverParentName", hoverParentName);
+			ignoredAnc.push([proof[hoverParentName], -1]);
+
+			let currNode = proof[hoverParentName];
+			// console.log("currNode", currNode);
+			let currDepth = -1;
+			while (ancestors(currNode).length > 0) { // keep going until we reach the root
+				currNode = ancestors(currNode)[0][0];
+				ignoredAnc.push([currNode, currDepth - 1]);
+				currDepth--;
+			}
+
+			// console.log("ancestors after hoverParent", ignoredAnc);
+		}
+
+		let minDepth = 0;
+		ignoredAnc.forEach(function (a) { //~ same code as Jacks but for ignoredAnc
+			if (a[1] < minDepth) {
+				minDepth = a[1];
+			}
+		});
+
+		for (let [a, depth] of ignoredAnc) { //~ same code as Jacks but coloring for ignoredAnc
+			if(a.graphviz.fillcolor != "#000000")
+				assignColorToNode(colorHelper(depth, minDepth, maxDepth), a);
+		}
+	}
+	//@========================================================================
 
 	for (let [a, depth] of anc) {
 		if(a.graphviz.fillcolor != "#000000")

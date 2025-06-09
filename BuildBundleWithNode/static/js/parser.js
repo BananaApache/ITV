@@ -431,7 +431,6 @@ let proofToGV = function (nodes) {
     for(const [level, names] of Object.entries(levels)){
 		gvLines.push(`{rank=same; ${names.map(x=>`"${x}"`).join(' ')}}`);
     }
-
 	
     for(let node of nodeList){
 		let arrowOrNot = node.graphviz.invis ? " [dir=none] " : "";
@@ -455,11 +454,33 @@ let proofToGV = function (nodes) {
 	
 	//@ 																								
 
+	//@=========================================================================================
+	//~ D&E added to make sure all ignored formulas are above 0:0
+	let leafNodes = getLeafNodes(nodeList);
+	for (let node of leafNodes) {
+		gvLines.push(`"${node.name}" -> "'0:0'" [style=invis]`);
+	}
+	//@=========================================================================================
+	
 	gvLines.push("}");
 	console.log(gvLines.join('\n'));
+
+	
 	return gvLines.join('\n');
 }
 
+//@===========================================================================================
+//~ D&E added to get leaf nodes that aren't $false or lemmas
+let getLeafNodes = function (nodeList) {
+	let leafNodes = [];
+	for (let node of nodeList) {
+		if (node.children.length == 0 && node.formula != "$false" && !node.inference_record.includes("lemma")) {
+			leafNodes.push(node);
+		}
+	}
+	return leafNodes;
+}
+//@===========================================================================================
 
 let parseProof = function (proofText) {
 	let chars = new antlr4.default.InputStream(proofText);

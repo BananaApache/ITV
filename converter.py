@@ -99,24 +99,44 @@ def convert_cnfs(filename="input.s", output_filename=None, delete=False):
         if ("(" in cnf['formula'] or ")" in cnf['formula']) and cnf['inference_rule'] != "lemma_extension" and cnf['inference_rule'] != "lemma": # for formulas
             literals = cnf['formula'].split("|")
             for i, literal in enumerate(literals):
-                if len(cnf['path']) == 2 and i + 2 <= len(literals):
-                    new_formula = f"""
+                if len(cnf['path']) == 2 and i + 2 <= len(literals): # for second level formulas
+                    if len(cnf['parents'].strip("[]").split(",")) == 1 and ":" not in cnf['parents'].strip("[]").split(",")[0]:
+                        new_formula = f"""
+fof('{cnf['name']}:{i + 1}',plain, 
+    {literal},
+    inference({cnf['inference_rule']},[level({len(cnf['path'])}), hoverParent("{cnf['parents'].strip("[]").split(",")[0]}"), nextTo('{cnf['name']}:{i + 2}')],['{cnf['path'][0]}']), 
+    [] ).
+                    """
+                        output.append(new_formula)
+                        continue
+                    else:
+                        new_formula = f"""
 fof('{cnf['name']}:{i + 1}',plain, 
     {literal},
     inference({cnf['inference_rule']},[level({len(cnf['path'])}), nextTo('{cnf['name']}:{i + 2}')],['{cnf['path'][0]}']), 
     [] ).
-                """
-                    output.append(new_formula)
-                    continue
+                    """
+                        output.append(new_formula)
+                        continue
                 else:
-                    new_formula = f"""
+                    if len(cnf['parents'].strip("[]").split(",")) == 1 and ":" not in cnf['parents'].strip("[]").split(",")[0]:
+                        new_formula = f"""
+fof('{cnf['name']}:{i + 1}',plain, 
+    {literal},
+    inference({cnf['inference_rule']},[level({len(cnf['path'])}), hoverParent("{cnf['parents'].strip("[]").split(",")[0]}")],['{cnf['path'][0]}']), 
+    [] ).
+                    """
+                        output.append(new_formula)
+                        continue
+                    else:
+                        new_formula = f"""
 fof('{cnf['name']}:{i + 1}',plain, 
     {literal},
     inference({cnf['inference_rule']},[level({len(cnf['path'])})],['{cnf['path'][0]}']), 
     [] ).
-                """
-                    output.append(new_formula)
-                    continue
+                    """
+                        output.append(new_formula)
+                        continue
                 
         elif ("(" in cnf['formula'] or ")" in cnf['formula']) and cnf['inference_rule'] == "lemma_extension": # for formulas lemma_extension
             literals = cnf['formula'].split("|")
