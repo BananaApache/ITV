@@ -228,9 +228,8 @@ function nodeHoverEventListener(e) {
 			ignoredAnc.push([proof[hoverParentName], -1]);
 
 			let currNode = proof[hoverParentName];
-			// console.log("currNode", currNode);
 			let currDepth = -1;
-			while (ancestors(currNode).length > 0) { // keep going until we reach the root
+			while (ancestors(currNode).length > 0) { 
 				currNode = ancestors(currNode)[0][0];
 				ignoredAnc.push([currNode, currDepth - 1]);
 				currDepth--;

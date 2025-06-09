@@ -463,7 +463,7 @@ let proofToGV = function (nodes) {
 	//@=========================================================================================
 	
 	gvLines.push("}");
-	console.log(gvLines.join('\n'));
+	// console.log(gvLines.join('\n'));
 
 	
 	return gvLines.join('\n');
