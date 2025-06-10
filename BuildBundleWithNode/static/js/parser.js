@@ -329,6 +329,7 @@ function nodeToGV(s) {
 
 		let label = window.interpretation ? interpretationLabel(node) : node.name;
 		label = node.graphviz.inviz ? "" : abbreviate(label)
+		label = node.tptp.includes("level") ? label : node.name; //~ D&E added to show node name in pre-start nodes
 		s.push(`"${node.name}" [
 			fixedsize=true,
 			label="${label}",
@@ -442,12 +443,18 @@ let proofToGV = function (nodes) {
 
 	window.nodeList = nodeList
 
+	let leafNodes = getLeafNodes(nodeList);
 	for (let node of nodeList) {
 		if (node.nextTo != undefined) {
 			gvLines.push("{rank=same; " + `"${node.name}"` + " " + `"'${node.nextTo}'"` + "}");
 			gvLines.push("subgraph cluster_adjacent {");
 			gvLines.push("style=invis;");
 			gvLines.push(`"'${node.nextTo}'"; "${node.name}";`);
+			for (let node of leafNodes) {
+				gvLines.push(`"${node.name}" -> "'0:0'" [style=invis]`);
+			}
+			
+			gvLines.push(`{ rank=same; dummy_center [style=invis, width=0, height=0, label=""]; ${leafNodes.map(x => `${x.name}`).join('; ')}; }`);
 			gvLines.push("}");
 		}
 	}
@@ -456,14 +463,17 @@ let proofToGV = function (nodes) {
 
 	//@=========================================================================================
 	//~ D&E added to make sure all ignored formulas are above 0:0
-	let leafNodes = getLeafNodes(nodeList);
-	for (let node of leafNodes) {
-		gvLines.push(`"${node.name}" -> "'0:0'" [style=invis]`);
-	}
+	// let leafNodes = getLeafNodes(nodeList);
+	// for (let node of leafNodes) {
+	// 	gvLines.push(`"${node.name}" -> "'0:0'" [style=invis]`);
+	// }
+	
+	// gvLines.push(`{ rank=same; dummy_center [style=invis, width=0, height=0, label=""]; ${leafNodes.map(x => `${x.name}`).join('; ')}; }`);
+
 	//@=========================================================================================
 	
 	gvLines.push("}");
-	// console.log(gvLines.join('\n'));
+	console.log(gvLines.join('\n'));
 
 	
 	return gvLines.join('\n');
