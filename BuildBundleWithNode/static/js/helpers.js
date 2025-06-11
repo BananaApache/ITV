@@ -271,19 +271,52 @@ function nodeHoverEventListener(e) {
 	//~ D&E added for hovering of descendants for pre-start nodes
 	if (!node.tptp.includes("level")) {
 		let nodes = getNodeFromParent(nodeList, node.name)
-		let ignoredDes = Array.from(nodes).map(n => [n, 1]);
 
-		for (let node of nodes) {
-			let currNode = node;
-			let currDepth = 1;
-			for (let descendant of descendants(currNode)) {
-				// currNode = descendants(currNode)[0][0];
-				ignoredDes.push([descendant[0], currDepth + 1]);
-				currDepth++;
+		console.log("nodes from getNodeFromParent", nodes);
+
+		let ignoredDes = [];
+
+		if (nodes.length > 0) {
+			ignoredDes = Array.from(nodes).map(n => [n, 1]);
+	
+			for (let node of nodes) {
+				let currNode = node;
+				let currDepth = 1;
+				for (let descendant of descendants(currNode)) {
+					// currNode = descendants(currNode)[0][0];
+					ignoredDes.push([descendant[0], currDepth + 1]);
+					currDepth++;
+				}
 			}
+	
+			console.log("descendants after hoverParent", ignoredDes);
 		}
+		else {
+			let tmpDes = descendants(node);
+			let nodes = getNodeFromParent(nodeList, tmpDes[0][0].name);
+			let loopDepth = 1;
+			while (nodes.length == 0) {
+				ignoredDes.push([tmpDes[0][0], loopDepth + 1]);
+				tmpDes = descendants(tmpDes[0][0]);
+				nodes = getNodeFromParent(nodeList, tmpDes[0][0].name);
+				loopDepth++;
+			}
+			console.log(tmpDes)
+			ignoredDes.push([tmpDes[0][0], loopDepth + 1]);
+			ignoredDes.push(...Array.from(nodes).map(n => [n, 2]));
+		
+			for (let node of nodes) {
+				let currNode = node;
+				let currDepth = 2;
+				for (let descendant of descendants(currNode)) {
+					// currNode = descendants(currNode)[0][0];
+					ignoredDes.push([descendant[0], currDepth + 1]);
+					currDepth++;
+				}
+			}
 
-		// console.log("descendants after hoverParent", ignoredDes);
+			console.log("descendants after hoverParent", ignoredDes);			
+		}
 
 		let maxDepth = 0;
 		ignoredDes.forEach(function (d) {
