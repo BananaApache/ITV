@@ -292,30 +292,33 @@ function nodeHoverEventListener(e) {
 			console.log("descendants after hoverParent", ignoredDes);
 		}
 		else {
-			let tmpDes = descendants(node);
-			let nodes = getNodeFromParent(nodeList, tmpDes[0][0].name);
-			let loopDepth = 1;
-			while (nodes.length == 0) {
-				ignoredDes.push([tmpDes[0][0], loopDepth + 1]);
-				tmpDes = descendants(tmpDes[0][0]);
-				nodes = getNodeFromParent(nodeList, tmpDes[0][0].name);
-				loopDepth++;
-			}
-			console.log(tmpDes)
-			ignoredDes.push([tmpDes[0][0], loopDepth + 1]);
-			ignoredDes.push(...Array.from(nodes).map(n => [n, 2]));
-		
-			for (let node of nodes) {
-				let currNode = node;
-				let currDepth = 2;
-				for (let descendant of descendants(currNode)) {
-					// currNode = descendants(currNode)[0][0];
-					ignoredDes.push([descendant[0], currDepth + 1]);
-					currDepth++;
+			let tmpDescendants = descendants(node);
+			for (let tmpDes of tmpDescendants) {
+				let nodes = getNodeFromParent(nodeList, tmpDes[0].name);
+				let loopDepth = 1;
+				while (nodes.length == 0) {
+					console.log("tmpDes", tmpDes);
+					ignoredDes.push([tmpDes[0], loopDepth + 1]);
+					tmpDes = descendants(tmpDes[0])[0];
+					console.log("newtmpDes", tmpDes);
+					nodes = getNodeFromParent(nodeList, tmpDes[0].name);
+					loopDepth++;
 				}
-			}
+				ignoredDes.push([tmpDes[0], loopDepth + 1]);
+				ignoredDes.push(...Array.from(nodes).map(n => [n, 2]));
+			
+				for (let node of nodes) {
+					let currNode = node;
+					let currDepth = 2;
+					for (let descendant of descendants(currNode)) {
+						// currNode = descendants(currNode)[0][0];
+						ignoredDes.push([descendant[0], currDepth + 1]);
+						currDepth++;
+					}
+				}
 
-			console.log("descendants after hoverParent", ignoredDes);			
+				console.log("descendants after hoverParent", ignoredDes);			
+			}
 		}
 
 		let maxDepth = 0;
@@ -356,7 +359,6 @@ function nodeHoverEventListener(e) {
 			assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
 	}
 	//@========================================================================
-
 	else {
 		for (let [a, depth] of anc) {
 			if(a.graphviz.fillcolor != "#000000")
