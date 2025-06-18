@@ -328,8 +328,12 @@ function nodeToGV(s) {
 		}*/
 
 		let label = window.interpretation ? interpretationLabel(node) : node.name;
+		console.log("label", label);
 		label = node.graphviz.inviz ? "" : abbreviate(label)
-		label = node.tptp.includes("level") ? label : node.name; //~ D&E added to show node name in pre-start nodes
+		console.log("node", node.name);
+		console.log("label", label)
+		label = node.tptp.includes("level") ? label : abbreviate(node.name); //~ D&E added to show node name in pre-start nodes
+		console.log("label", label)
 		s.push(`"${node.name}" [
 			fixedsize=true,
 			label="${label}",
@@ -473,7 +477,7 @@ let proofToGV = function (nodes) {
 	//@=========================================================================================
 	
 	gvLines.push("}");
-	console.log(gvLines.join('\n'));
+	// console.log(gvLines.join('\n'));
 
 	
 	return gvLines.join('\n');
