@@ -272,8 +272,6 @@ function nodeHoverEventListener(e) {
 	if (!node.tptp.includes("level")) {
 		let nodes = getNodeFromParent(nodeList, node.name)
 
-		console.log("nodes from getNodeFromParent", nodes);
-
 		let ignoredDes = [];
 
 		if (nodes.length > 0) {
@@ -293,18 +291,30 @@ function nodeHoverEventListener(e) {
 		}
 		else {
 			let tmpDescendants = descendants(node);
+			console.log("tmpDescendants", tmpDescendants);
 			for (let tmpDes of tmpDescendants) {
 				let nodes = getNodeFromParent(nodeList, tmpDes[0].name);
+				console.log("nodes", nodes);
 				let loopDepth = 1;
 				while (nodes.length == 0) {
 					console.log("tmpDes", tmpDes);
-					ignoredDes.push([tmpDes[0], loopDepth + 1]);
+
+					ignoredDes.push([tmpDes[0], loopDepth + 1]); // push the current node with its depth
+					console.log(ignoredDes);
+					
 					tmpDes = descendants(tmpDes[0])[0];
 					console.log("newtmpDes", tmpDes);
+
+					if (tmpDes === undefined) {
+						console.log("No more descendants found, breaking loop");
+						break;
+					}
+
 					nodes = getNodeFromParent(nodeList, tmpDes[0].name);
 					loopDepth++;
 				}
-				ignoredDes.push([tmpDes[0], loopDepth + 1]);
+
+				// ignoredDes.push([tmpDes[0], loopDepth + 1]);
 				ignoredDes.push(...Array.from(nodes).map(n => [n, 2]));
 			
 				for (let node of nodes) {
