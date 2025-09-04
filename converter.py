@@ -228,7 +228,7 @@ thf('{cnf['name']}:{1}',axiom,
             # print(f"Output file: {output_filename}")
 
     for line in output:
-        print(line.strip())
+        print(line.strip() + "\n")
 
     return output
     

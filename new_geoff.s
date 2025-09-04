@@ -7,21 +7,21 @@ fof(prove,conjecture,! [X] :( ~ s(X)& ~ q(b)& p(c) ),file('PaperFOF.p',prove) ).
 fof(nc1,negated_conjecture,~ ! [X] :( ~ s(X)& ~ q(b)& p(c) ),inference(negate,[status(cth)],[prove]) ).
 fof(nc2,negated_conjecture,? [X] :~ ( ~ s(X)& ~ q(b)& p(c) ),inference(negate,[status(thm)],[nc1]) ).
 fof(nc3,negated_conjecture,~ ( ~ s(sK1)& ~ q(b)& p(c) ),inference(skolemize,[status(esa),new_symbols(skolem,[sK1]),skolemized(X)],[nc2]) ).
-cnf(c1,plain,( q(b)| ~ s(X) ),inference(clausify,[status(thm)],[a1]) ).
-cnf(c2,plain,( ~ q(b)| ~ p(X)| ~ r ),inference(clausify,[status(thm)],[a2]) ).
+cnf(c1,plain,( q(Y)| ~ s(X) ),inference(clausify,[status(thm)],[a1]) ).
+cnf(c2,plain,( ~ q(Z)| ~ p(X)| ~ r ),inference(clausify,[status(thm)],[a2]) ).
 cnf(c3,plain,( p(c)| ~ q(c) ),inference(clausify,[status(thm)],[a3]) ).
-cnf(c4,plain,( p(c)| q(Y) ),inference(clausify,[status(thm)],[a3]) ).
+cnf(c4,plain,( p(c)| q(a) ),inference(clausify,[status(thm)],[a3]) ).
 cnf(c5,plain,( q(c)| ~ q(b) ),inference(clausify,[status(thm)],[a4]) ).
 cnf(c6,plain,( r| ~ p(c) ),inference(clausify,[status(thm)],[a5]) ).
 cnf(c7,negated_conjecture,( s(sK1)| q(b)| ~ p(c) ),inference(clausify,[status(thm)],[nc3]) ).
 %----Derivation
 tcf('0:0',conjecture, 
-    $true, 
+    $true,  
     introduced(language,[level(0)],[]),
     [] ).
 
 fof('t1:1',plain, 
-    q(b),
+    q(Y),
     inference(start,[level(1),hoverParent("c1")],['0:0']), 
     [] ).
                     
@@ -31,7 +31,7 @@ fof('t1:2',plain,
     [] ).
                     
 fof('t2:1',plain,
-    ~q(b),
+    ~q(Y),
     inference(extension,[level(2),hoverParent("c2"),nextTo('t2:2')],['t1:1']), 
     [] ).
                     
@@ -116,7 +116,7 @@ tcf(t12,conjecture,
     [] ).
                 
 thf('l2:1',axiom, 
-    ~q(b), 
+    ~q(Y), 
     inference(lemma,[level(1),nextTo('t1:1')],['t1:1']), 
     [] ).
             
@@ -156,7 +156,7 @@ fof('t17:1',plain,
     [] ).
                     
 fof('t17:2',plain, 
-    q(b),
+    q(a),
     inference(extension,[level(3),hoverParent("c4")],['t13:3']), 
     [] ).
                     
@@ -166,7 +166,7 @@ tcf(t18,conjecture,
     [] ).
                 
 fof('t19:1',plain,
-    ~q(b),
+    ~q(a),
     inference(lemma_extension,[level(4),hoverNode('l2:1')],['t17:2']), 
     [] ).
                 

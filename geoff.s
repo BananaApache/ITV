@@ -1,3 +1,5 @@
+%------------------------------------------------------------------------------
+%----Problem formulae in FOF
 fof(a1,axiom,
     ~ ( ~ q(b)
       & ? [X] : s(X) ),
@@ -33,6 +35,7 @@ fof(prove,conjecture,
       & p(c) ),
     file('PaperFOF.p',prove) ).
 
+%----Clausification
 fof(nc1,negated_conjecture,
     ~ ! [X] :
         ( ~ s(X)
@@ -54,12 +57,12 @@ fof(nc3,negated_conjecture,
     inference(skolemize,[status(esa),new_symbols(skolem,[sK1]),skolemized(X)],[nc2]) ).
 
 cnf(c1,plain,
-    ( q(b)
+    ( q(Y)
     | ~ s(X) ),
     inference(clausify,[status(thm)],[a1]) ).
 
 cnf(c2,plain,
-    ( ~ q(b)
+    ( ~ q(Z)
     | ~ p(X)
     | ~ r ),
     inference(clausify,[status(thm)],[a2]) ).
@@ -71,7 +74,7 @@ cnf(c3,plain,
 
 cnf(c4,plain,
     ( p(c)
-    | q(Y) ),
+    | q(a) ),
     inference(clausify,[status(thm)],[a3]) ).
 
 cnf(c5,plain,
@@ -90,14 +93,14 @@ cnf(c7,negated_conjecture,
     | ~ p(c) ),
     inference(clausify,[status(thm)],[nc3]) ).
 
-%------------------------------------------------------------------------------
+%----Derivation
 cnf(t1,plain,
-    ( q(b)
+    ( q(Y)
     | ~ s(sK1) ),
     inference(start,[status(thm),parent(0:0)],[c1]) ).
 
 cnf(t2,plain,
-    ( ~ q(b)
+    ( ~ q(Y)
     | ~ p(c)
     | ~ r ),
     inference(extension,[status(thm),parent(t1:1)],[c2]) ).
@@ -150,7 +153,7 @@ cnf(t12,plain,
     inference(connection,[status(thm),parent(t11:1)],[t9:2,t11:1]) ).
 
 cnf(l2,lemma,
-    ~ q(b),
+    ~ q(Y),
     inference(lemma,[status(cth),parent(t1:1),below(0:0)],[t1:1]) ).
 
 cnf(t13,plain,
@@ -173,7 +176,7 @@ cnf(t16,plain,
 
 cnf(t17,plain,
     ( p(c)
-    | q(b) ),
+    | q(a) ),
     inference(extension,[status(thm),parent(t13:3)],[c4]) ).
 
 cnf(t18,plain,
@@ -181,10 +184,11 @@ cnf(t18,plain,
     inference(connection,[status(thm),parent(t17:1)],[t17:1,t13:3]) ).
 
 cnf(t19,plain,
-    ~ q(b),
+    ~ q(a),
     inference(lemma_extension,[status(thm),parent(t17:2)],[l2:1]) ).
 
 cnf(t20,plain,
     $false,
     inference(connection,[status(thm),parent(t19:1)],[t19:1,t17:2]) ).
+
 %------------------------------------------------------------------------------
