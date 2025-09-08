@@ -1,31 +1,30 @@
 %------------------------------------------------------------------------------
-%----Problem formulae in FOF
 fof(a1,axiom,
-    ~ ( ~ q(b)
-      & ? [X] : s(X) ),
+    ! [Y] :
+      ~ ( ~ q(Y)
+        & ? [X] : s(X) ),
     file('PaperFOF.p',a1) ).
 
 fof(a2,axiom,
     ( ( r
-      & q(b) )
+      & ? [Z] : q(Z) )
    => ! [X] : ~ p(X) ),
     file('PaperFOF.p',a2) ).
 
 fof(a3,axiom,
     ( p(c)
-    | ! [Y] :
-        ( ~ q(c)
-        & q(Y) ) ),
+    | ( ~ q(c)
+      & q(a) ) ),
     file('PaperFOF.p',a3) ).
 
 fof(a4,axiom,
-    ( q(c)
-    | ~ q(b) ),
+    ( ~ q(c)
+   => ! [W] : ~ q(W) ),
     file('PaperFOF.p',a4) ).
 
 fof(a5,axiom,
-    ( ~ p(c)
-    | r ),
+    ( p(c)
+   => r ),
     file('PaperFOF.p',a5) ).
 
 fof(prove,conjecture,
@@ -79,7 +78,7 @@ cnf(c4,plain,
 
 cnf(c5,plain,
     ( q(c)
-    | ~ q(b) ),
+    | ~ q(W) ),
     inference(clausify,[status(thm)],[a4]) ).
 
 cnf(c6,plain,
@@ -120,7 +119,7 @@ cnf(t5,plain,
 
 cnf(t6,plain,
     ( q(c)
-    | ~ q(b) ),
+    | ~ q(Y) ),
     inference(extension,[status(thm),parent(t4:2)],[c5]) ).
 
 cnf(t7,plain,

@@ -4,7 +4,7 @@ module.exports = {
   entry: './static/js/helpers.js',
   output: {
     path: path.resolve(__dirname, './static/js'),
-    filename: 'bundle.js'
+    filename: 'ITVbundle.js'
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".css", ".mjs"],

@@ -1,8 +1,8 @@
-fof(a1,axiom,~ ( ~ q(b)& ? [X] : s(X) ),file('PaperFOF.p',a1) ).
-fof(a2,axiom,( ( r& q(b) )=> ! [X] : ~ p(X) ),file('PaperFOF.p',a2) ).
-fof(a3,axiom,( p(c)| ! [Y] :( ~ q(c)& q(Y) ) ),file('PaperFOF.p',a3) ).
-fof(a4,axiom,( q(c)| ~ q(b) ),file('PaperFOF.p',a4) ).
-fof(a5,axiom,( ~ p(c)| r ),file('PaperFOF.p',a5) ).
+fof(a1,axiom,! [Y] :~ ( ~ q(Y)& ? [X] : s(X) ),file('PaperFOF.p',a1) ).
+fof(a2,axiom,( ( r& ? [Z] : q(Z) )=> ! [X] : ~ p(X) ),file('PaperFOF.p',a2) ).
+fof(a3,axiom,( p(c)| ( ~ q(c)& q(a) ) ),file('PaperFOF.p',a3) ).
+fof(a4,axiom,( ~ q(c)=> ! [W] : ~ q(W) ),file('PaperFOF.p',a4) ).
+fof(a5,axiom,( p(c)=> r ),file('PaperFOF.p',a5) ).
 fof(prove,conjecture,! [X] :( ~ s(X)& ~ q(b)& p(c) ),file('PaperFOF.p',prove) ).
 fof(nc1,negated_conjecture,~ ! [X] :( ~ s(X)& ~ q(b)& p(c) ),inference(negate,[status(cth)],[prove]) ).
 fof(nc2,negated_conjecture,? [X] :~ ( ~ s(X)& ~ q(b)& p(c) ),inference(negate,[status(thm)],[nc1]) ).
@@ -11,12 +11,12 @@ cnf(c1,plain,( q(Y)| ~ s(X) ),inference(clausify,[status(thm)],[a1]) ).
 cnf(c2,plain,( ~ q(Z)| ~ p(X)| ~ r ),inference(clausify,[status(thm)],[a2]) ).
 cnf(c3,plain,( p(c)| ~ q(c) ),inference(clausify,[status(thm)],[a3]) ).
 cnf(c4,plain,( p(c)| q(a) ),inference(clausify,[status(thm)],[a3]) ).
-cnf(c5,plain,( q(c)| ~ q(b) ),inference(clausify,[status(thm)],[a4]) ).
+cnf(c5,plain,( q(c)| ~ q(W) ),inference(clausify,[status(thm)],[a4]) ).
 cnf(c6,plain,( r| ~ p(c) ),inference(clausify,[status(thm)],[a5]) ).
 cnf(c7,negated_conjecture,( s(sK1)| q(b)| ~ p(c) ),inference(clausify,[status(thm)],[nc3]) ).
 %----Derivation
 tcf('0:0',conjecture, 
-    $true,  
+    $true, 
     introduced(language,[level(0)],[]),
     [] ).
 
@@ -71,7 +71,7 @@ fof('t6:1',plain,
     [] ).
                     
 fof('t6:2',plain, 
-    ~q(b),
+    ~q(Y),
     inference(extension,[level(4),hoverParent("c5")],['t4:2']), 
     [] ).
                     
