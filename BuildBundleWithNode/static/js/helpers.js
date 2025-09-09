@@ -109,6 +109,10 @@ let graphviz = d3.select("#graph").graphviz();
 window.graphviz = graphviz;
 
 graphviz.zoomScaleExtent([0.01,100])
+// graphviz.fit(true);
+graphviz
+  .zoom(true)                
+  .scale(0.9)
 
 graphviz.transition(function () {
 	return d3.transition("main").duration(500);
