@@ -239,7 +239,7 @@ function nodeHoverEventListener(e) {
 	//~ D&E added for hoverParent functionality
 	if (node.tptp.includes("hoverParent")) {
 		let ignoredAnc = [];
-
+		
 		const match = node.tptp.match(/hoverParent\((("[^']+"))\)/)
 		if (match) {
 			const hoverParentName = match[1].replaceAll('"', '');
@@ -363,18 +363,51 @@ function nodeHoverEventListener(e) {
 			assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
 	}
 	//@========================================================================
-	else {
-		for (let [a, depth] of anc) {
-			if(a.graphviz.fillcolor != "#000000")
-				assignColorToNode(colorHelper(depth, minDepth, maxDepth), a);
+	else { // all regular nodes with level
+		console.log("regular node with level" + node.name);
+
+		// console.log("ancestors", anc);
+		// console.log("descendants", des);
+
+		if (node.tptp.includes('lemma,')) {
+			// Handle lemma case
+			console.log(node.nextTo)
+
+			let n = proof["'" + node.nextTo + "'"]
+			let des = descendants(n);
+
+			let minDepth = 0;
+
+			let maxDepth = 0;
+			des.forEach(function (d) {
+				if (d[1] > maxDepth) {
+					maxDepth = d[1];
+				}
+			});
+			
+			for (let [d, depth] of des) {
+				if(d.graphviz.fillcolor != "#000000")
+					assignColorToNode(colorHelper(depth, minDepth, maxDepth), d);
+			}
+
+			if(node.graphviz.fillcolor != "#000000")
+				assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
+
+			assignColorToNode("#c4d6e9ff", n)
 		}
-		for (let [d, depth] of des) {
-			if(d.graphviz.fillcolor != "#000000")
-				assignColorToNode(colorHelper(depth, minDepth, maxDepth), d);
+		else {
+			for (let [a, depth] of anc) {
+				if(a.graphviz.fillcolor != "#000000")
+					assignColorToNode(colorHelper(depth, minDepth, maxDepth), a);
+			}
+			for (let [d, depth] of des) {
+				if(d.graphviz.fillcolor != "#000000")
+					assignColorToNode(colorHelper(depth, minDepth, maxDepth), d);
+			}
+		
+			if(node.graphviz.fillcolor != "#000000")
+				assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
 		}
-	
-		if(node.graphviz.fillcolor != "#000000")
-			assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
 	}
 
 
