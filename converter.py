@@ -1,5 +1,6 @@
 
 import re
+import os
 import argparse
 import requests
 
@@ -212,8 +213,8 @@ tcf({cnf['name']},conjecture,
 
         elif cnf['inference_rule'] == "lemma": # for lemmas
             below_level = depth[cnf['below'].split(':')[0]] if cnf['below'].split(':')[0] in depth else 0
-            print(f"Below level for {cnf['name']} ({cnf['below'].split(':')[0]}): {below_level}")
-            print(depth)
+            # print(f"Below level for {cnf['name']} ({cnf['below'].split(':')[0]}): {below_level}")
+            # print(depth)
             new_formula = f"""
 thf('{cnf['name']}:{1}',axiom, 
     {cnf['formula']}, 
@@ -238,6 +239,10 @@ thf('{cnf['name']}:{1}',axiom,
     
 
 def has_errors(input_file):
+    if not os.path.isfile(input_file):
+        print(f"Error: The file '{input_file}' does not exist.")
+        return (True, f"Error: The file '{input_file}' does not exist.")
+        
     f = open(input_file, 'r')
     inp = f.read()
     f.close()
@@ -412,6 +417,6 @@ if not has_error:
             convert_cnfs(args.input_file, delete=False)
     print(f"% SZS output end ListOfFormulae for {args.input_file}")
 else:
-    print(f"% SZS status NoSuccess")
-    print(error_text)
+    print(f"% SZS status Error")
+    print(f"% {error_text}")
 
