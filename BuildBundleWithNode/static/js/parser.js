@@ -328,12 +328,12 @@ function nodeToGV(s) {
 		}*/
 
 		let label = window.interpretation ? interpretationLabel(node) : node.name;
-		console.log("label", label);
+		// console.log("label", label);
 		label = node.graphviz.inviz ? "" : abbreviate(label)
-		console.log("node", node.name);
-		console.log("label", label)
+		// console.log("node", node.name);
+		// console.log("label", label)
 		label = node.tptp.includes("level") ? label : abbreviate(node.name); //~ D&E added to show node name in pre-start nodes
-		console.log("label", label)
+		// console.log("label", label)
 		s.push(`"${node.name}" [
 			fixedsize=true,
 			label="${label}",
@@ -450,7 +450,7 @@ let proofToGV = function (nodes) {
 	let leafNodes = getLeafNodes(nodeList);
 	for (let node of nodeList) {
 		if (node.nextTo != undefined) {
-			gvLines.push("{rank=same; " + `"${node.name}"` + " " + `"'${node.nextTo}'"` + "}");
+			// gvLines.push("{rank=same; " + `"${node.name}"` + " " + `"'${node.nextTo}'"` + "}");
 			gvLines.push("subgraph cluster_adjacent {");
 			gvLines.push("style=invis;");
 			gvLines.push(`"'${node.nextTo}'"; "${node.name}";`);
@@ -480,6 +480,8 @@ let proofToGV = function (nodes) {
 	// console.log(gvLines.join('\n'));
 
 	
+	console.log("Graphviz output:");
+	console.log(gvLines.join('\n'));
 	return gvLines.join('\n');
 }
 

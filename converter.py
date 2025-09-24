@@ -51,7 +51,8 @@ def get_all_cnfs(filename="input.s"):
                     "inference_rule": re.match(inference_pattern, inference).group(1),
                     # "useful_info": re.match(pattern, inference).group(2),
                     "path": re.search(r'parent\(\s*([^)\s]+)\s*\)', inference).group(1) if "parent" in inference else re.match(inference_pattern, inference).group(2).strip("[]").split(","),
-                    "parents": re.match(inference_pattern, inference).group(3)
+                    "parents": re.match(inference_pattern, inference).group(3),
+                    "below": re.search(r'below\(\s*([^)\s]+)\s*\)', inference).group(1) if "below" in inference else None
                 }
             )
         else:
@@ -210,10 +211,13 @@ tcf({cnf['name']},conjecture,
                 continue
 
         elif cnf['inference_rule'] == "lemma": # for lemmas
+            below_level = depth[cnf['below'].split(':')[0]] if cnf['below'].split(':')[0] in depth else 0
+            print(f"Below level for {cnf['name']} ({cnf['below'].split(':')[0]}): {below_level}")
+            print(depth)
             new_formula = f"""
 thf('{cnf['name']}:{1}',axiom, 
     {cnf['formula']}, 
-    inference({cnf['inference_rule']},[level({depth[cnf['name']] - 1}),nextTo('{cnf['path']}')],['{cnf['path']}']), 
+    inference({cnf['inference_rule']},[level({below_level}),nextTo('{cnf['path']}'),below({cnf['below']})],['{cnf['path']}']), 
     [] ).
             """
             output.append(new_formula)
