@@ -400,8 +400,8 @@ parser.add_argument("-d", "--delete", action="store_true",
 args = parser.parse_args()
 
 has_error, error_text = has_errors(args.input_file)
-has_error = False
-error_text = ""
+# has_error = False
+# error_text = ""
 
 if not has_error:
     print(f"% SZS status Success\n% SZS output start ListOfFormulae for {args.input_file}")
