@@ -254,7 +254,7 @@ function nodeHoverEventListener(e) {
 				currDepth--;
 			}
 
-			// console.log("ancestors after hoverParent", ignoredAnc);
+			console.log("ancestors after hoverParent", ignoredAnc);
 		}
 
 		let minDepth = 0;
@@ -265,6 +265,9 @@ function nodeHoverEventListener(e) {
 		});
 
 		for (let [a, depth] of ignoredAnc) { //~ same code as Jacks but coloring for ignoredAnc
+			if (a.tptp.includes('lemma,')) {
+				continue;
+			}
 			if(a.graphviz.fillcolor != "#000000")
 				assignColorToNode(colorHelper(depth, minDepth, maxDepth), a);
 		}
@@ -369,9 +372,8 @@ function nodeHoverEventListener(e) {
 		// console.log("ancestors", anc);
 		// console.log("descendants", des);
 
-		if (node.tptp.includes('lemma,')) {
-			// Handle lemma case
-			console.log(node.nextTo)
+		if (node.tptp.includes('lemma,')) { // ONLY FOR LEMMAS
+			// console.log(node.nextTo)
 
 			let n = proof["'" + node.nextTo + "'"]
 			let des = descendants(n);
@@ -393,14 +395,25 @@ function nodeHoverEventListener(e) {
 			if(node.graphviz.fillcolor != "#000000")
 				assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
 
-			assignColorToNode("#c4d6e9ff", n)
+			assignColorToNode("rgb(209 209 252)", n)
 		}
-		else {
+		else { // NORMAL CASE
+			// console.log("normal case for node " + node.name);
+
 			for (let [a, depth] of anc) {
+				// console.log("ANC ", a)
+
+				if (a.tptp.includes('lemma,')) {
+					continue;
+				}
 				if(a.graphviz.fillcolor != "#000000")
 					assignColorToNode(colorHelper(depth, minDepth, maxDepth), a);
 			}
 			for (let [d, depth] of des) {
+				// console.log("DES ", d)
+				if (d.tptp.includes('lemma,')) {
+					continue;
+				}
 				if(d.graphviz.fillcolor != "#000000")
 					assignColorToNode(colorHelper(depth, minDepth, maxDepth), d);
 			}
@@ -408,7 +421,7 @@ function nodeHoverEventListener(e) {
 			if(node.graphviz.fillcolor != "#000000")
 				assignColorToNode(colorHelper(0, minDepth, maxDepth), node);
 		}
-	}
+	} // END ELSE
 
 
 	//@========================================================================

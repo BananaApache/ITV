@@ -480,8 +480,8 @@ let proofToGV = function (nodes) {
 	// console.log(gvLines.join('\n'));
 
 	
-	console.log("Graphviz output:");
-	console.log(gvLines.join('\n'));
+	// console.log("Graphviz output:");
+	// console.log(gvLines.join('\n'));
 	return gvLines.join('\n');
 }
 
