@@ -3,6 +3,31 @@ import re
 import os
 import argparse
 import requests
+from collections import defaultdict, deque
+from antlr4 import *
+
+from PythonParsers.TPTPLexer import TPTPLexer
+from PythonParsers.TPTPParser import TPTPParser
+from PythonParsers.TPTPVisitor import TPTPVisitor
+
+
+class MyCNFVisitor(TPTPVisitor):
+    def visitCnf_annotated(self, ctx):
+        return ctx
+    
+    
+def parse_cnf(text):
+    input_stream = InputStream(text)
+    lexer = TPTPLexer(input_stream)
+    token_stream = CommonTokenStream(lexer)
+    parser = TPTPParser(token_stream)
+    parser.removeErrorListeners()
+
+    tree = parser.cnf_annotated()
+    visitor = MyCNFVisitor()
+    result = visitor.visit(tree)
+
+    return result
 
 STARTING_LINE = """%----Derivation
 tcf('0:0',conjecture, 
@@ -34,26 +59,58 @@ def get_all_formulas(filename="input.s"):
 def get_all_cnfs(filename="input.s"):
     all_formulas = get_all_formulas(filename)
     all_cnfs = { 'cnfs' : [], 'others': [] }
-    # might not work for other inferences with more than 3 parameters!!
-    inference_pattern = r'inference\(\s*([^,\[\]]+),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\]),\s*(\[(?:[^\[\]]+|\[[^\[\]]*\])*\])\s*\)'
 
     for formula in all_formulas:
         if formula.startswith("cnf(") and "parent" in formula:
-            cut_formula = formula[4:][:-3]
-            cnf_formula = cut_formula.split(",")[2].replace(" ", "")
-            inference = ",".join(cut_formula.split(",")[3:])
+            ctx = parse_cnf(formula)
+            
+            # inference = ",".join(cut_formula.split(",")[3:])
+            # inference = inference.strip()
+            
+            # import json
+            
+            # print(json.dumps(
+            #     {
+            #         "raw": formula,
+            #         "name": ctx.name().getText(),
+            #         "formula_role": ctx.formula_role().getText(),
+            #         "formula": ctx.cnf_formula().getText(),
+            #         # "annotations": inference,
+            #         "inference_rule": ctx.annotations().source().dag_source().inference_record().inference_rule().getText(),
+            #         # "useful_info": re.match(pattern, inference).group(2),
+            #         "path": ctx.annotations().source().dag_source().inference_record().useful_info().getText().split("parent(")[1].split(")")[0],
+            #         "parents": ctx.annotations().source().dag_source().inference_record().parents().getText(),
+            #         "below": ctx.annotations().source().dag_source().inference_record().useful_info().getText().split("below(")[1].split(")")[0] if "below" in ctx.annotations().source().dag_source().inference_record().useful_info().getText() else None
+            #     }, indent=4)
+            # )
+            
+            # print(json.dumps(
+            #     {
+            #         "raw": formula,
+            #         "name": cut_formula.split(",")[0],
+            #         "formula_role": cut_formula.split(",")[1],
+            #         "formula": cnf_formula[1:-1].strip() if cnf_formula.strip().startswith('(') and cnf_formula.strip().endswith(')') else cnf_formula.strip(),
+            #         # "annotations": inference,
+            #         "inference_rule": re.match(inference_pattern, inference).group(1),
+            #         # "useful_info": re.match(pattern, inference).group(2),
+            #         "path": re.search(r'parent\(\s*([^)\s]+)\s*\)', inference).group(1) if "parent" in inference else re.match(inference_pattern, inference).group(2).strip("[]").split(","),
+            #         "parents": re.match(inference_pattern, inference).group(3),
+            #         "below": re.search(r'below\(\s*([^)\s]+)\s*\)', inference).group(1) if "below" in inference else None
+            #     }, indent=4)
+            # )
+            
             all_cnfs['cnfs'].append(
                 {
                     "raw": formula,
-                    "name": cut_formula.split(",")[0],
-                    "formula_role": cut_formula.split(",")[1],
-                    "formula": cnf_formula[1:-1].strip() if cnf_formula.strip().startswith('(') and cnf_formula.strip().endswith(')') else cnf_formula.strip(),
+                    "name": ctx.name().getText(),
+                    "formula_role": ctx.formula_role().getText(),
+                    "formula": ctx.cnf_formula().getText(),
                     # "annotations": inference,
-                    "inference_rule": re.match(inference_pattern, inference).group(1),
+                    "inference_rule": ctx.annotations().source().dag_source().inference_record().inference_rule().getText(),
                     # "useful_info": re.match(pattern, inference).group(2),
-                    "path": re.search(r'parent\(\s*([^)\s]+)\s*\)', inference).group(1) if "parent" in inference else re.match(inference_pattern, inference).group(2).strip("[]").split(","),
-                    "parents": re.match(inference_pattern, inference).group(3),
-                    "below": re.search(r'below\(\s*([^)\s]+)\s*\)', inference).group(1) if "below" in inference else None
+                    "path": ctx.annotations().source().dag_source().inference_record().useful_info().getText().split("parent(")[1].split(")")[0],
+                    "parents": ctx.annotations().source().dag_source().inference_record().parents().getText(),
+                    "below": ctx.annotations().source().dag_source().inference_record().useful_info().getText().split("below(")[1].split(")")[0] if "below" in ctx.annotations().source().dag_source().inference_record().useful_info().getText() else None
                 }
             )
         else:
@@ -98,29 +155,39 @@ def convert_cnfs(filename="input.s", output_filename=None, delete=False):
         par = cnf['path'].split(":")[0]
         parent[child] = par
 
-    from collections import defaultdict, deque
-
     children = defaultdict(list)
     for child, par in parent.items():
         children[par].append(child)
+        
+    all_nodes = set(parent.keys()) | set(parent.values())
+    non_roots = set(parent.keys())
+    root_nodes = all_nodes - non_roots  
+    
+    depth = {root: 0 for root in root_nodes}
+    q = deque(root_nodes)
 
-    depth = {"0": 0}
-    q = deque(["0"])
+    # depth = {"0": 0}
+    # q = deque(["0"])
     while q:
         node = q.popleft()
         for ch in children.get(node, []):
             depth[ch] = depth[node] + 1
             q.append(ch)
-
+            
+    # print(depth)
+            
     # if has delete flag
     if delete:
         output = [STARTING_LINE]
     else:
         output = all_formulas['others'] + [STARTING_LINE]
-
+        
     # convert each cnf
     for cnf in all_cnfs:
-        if ("(" in cnf['formula'] or ")" in cnf['formula']) and cnf['inference_rule'] != "lemma_extension" and cnf['inference_rule'] != "lemma": # for formulas
+        if cnf['inference_rule'] != "lemma_extension" and cnf['inference_rule'] != "lemma": # for formulas
+            if cnf['formula'].startswith("(") and cnf['formula'].endswith(")"):
+                cnf['formula'] = cnf['formula'][1:-1]
+                
             literals = cnf['formula'].split("|")
             for i, literal in enumerate(literals):
                 if depth[cnf['name']] == 2 and i + 2 <= len(literals): # for second level formulas

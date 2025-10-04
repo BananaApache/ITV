@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Debug with Args",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",         // runs the current file
+      "console": "integratedTerminal", // so you can see print/output
+      "args": [
+        "input2.s", "output2.s",
+      ]
+    }
+  ]
+}
