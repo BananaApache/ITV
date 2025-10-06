@@ -45,11 +45,11 @@ fof('t2:3',plain,
     inference(extension,[level(2),hoverParent("c2")],['t1:1']), 
     [] ).
                     
-tcf(t3,conjecture,
+fof('t3:1',plain, 
     $false,
-    inference(connection,[level(3)],['t2:1']),
+    inference(connection,[level(3)],['t2:1']), 
     [] ).
-                
+                    
 fof('t4:1',plain, 
     p(c),
     inference(extension,[level(3),hoverParent("c3")],['t2:2']), 
@@ -60,11 +60,11 @@ fof('t4:2',plain,
     inference(extension,[level(3),hoverParent("c3")],['t2:2']), 
     [] ).
                     
-tcf(t5,conjecture,
+fof('t5:1',plain, 
     $false,
-    inference(connection,[level(4)],['t4:1']),
+    inference(connection,[level(4)],['t4:1']), 
     [] ).
-                
+                    
 fof('t6:1',plain, 
     q(c),
     inference(extension,[level(4),hoverParent("c5")],['t4:2']), 
@@ -75,16 +75,16 @@ fof('t6:2',plain,
     inference(extension,[level(4),hoverParent("c5")],['t4:2']), 
     [] ).
                     
-tcf(t7,conjecture,
+fof('t7:1',plain, 
     $false,
-    inference(connection,[level(5)],['t6:1']),
+    inference(connection,[level(5)],['t6:1']), 
     [] ).
-                
-tcf(t8,conjecture, 
-    $false, 
-    inference(reduction,[level(5),hoverNode('t1:1')],['t6:2']), 
+                    
+fof('t8:1',plain, 
+    $false,
+    inference(reduction,[level(5)],['t6:2']), 
     [] ).
-                
+                    
 thf('l1:1',axiom, 
     p(c), 
     inference(lemma,[level(1),nextTo('t2:2'),below(t1:1)],['t2:2']), 
@@ -100,21 +100,21 @@ fof('t9:2',plain,
     inference(extension,[level(3),hoverParent("c6")],['t2:3']), 
     [] ).
                     
-tcf(t10,conjecture,
+fof('t10:1',plain, 
     $false,
-    inference(connection,[level(4)],['t9:1']),
+    inference(connection,[level(4)],['t9:1']), 
     [] ).
-                
+                    
 fof('t11:1',plain,
     p(c),
     inference(lemma_extension,[level(4),hoverNode('l1:1')],['t9:2']), 
     [] ).
                 
-tcf(t12,conjecture,
+fof('t12:1',plain, 
     $false,
-    inference(connection,[level(5)],['t11:1']),
+    inference(connection,[level(5)],['t11:1']), 
     [] ).
-                
+                    
 thf('l2:1',axiom, 
     ~q(Y), 
     inference(lemma,[level(0),nextTo('t1:1'),below(0:0)],['t1:1']), 
@@ -135,21 +135,21 @@ fof('t13:3',plain,
     inference(extension,[level(2),hoverParent("c7")],['t1:2']), 
     [] ).
                     
-tcf(t14,conjecture,
+fof('t14:1',plain, 
     $false,
-    inference(connection,[level(3)],['t13:1']),
+    inference(connection,[level(3)],['t13:1']), 
     [] ).
-                
+                    
 fof('t15:1',plain,
     ~q(b),
     inference(lemma_extension,[level(3),hoverNode('l2:1')],['t13:2']), 
     [] ).
                 
-tcf(t16,conjecture,
+fof('t16:1',plain, 
     $false,
-    inference(connection,[level(4)],['t15:1']),
+    inference(connection,[level(4)],['t15:1']), 
     [] ).
-                
+                    
 fof('t17:1',plain, 
     p(c),
     inference(extension,[level(3),hoverParent("c4")],['t13:3']), 
@@ -160,18 +160,18 @@ fof('t17:2',plain,
     inference(extension,[level(3),hoverParent("c4")],['t13:3']), 
     [] ).
                     
-tcf(t18,conjecture,
+fof('t18:1',plain, 
     $false,
-    inference(connection,[level(4)],['t17:1']),
+    inference(connection,[level(4)],['t17:1']), 
     [] ).
-                
+                    
 fof('t19:1',plain,
     ~q(a),
     inference(lemma_extension,[level(4),hoverNode('l2:1')],['t17:2']), 
     [] ).
                 
-tcf(t20,conjecture,
+fof('t20:1',plain, 
     $false,
-    inference(connection,[level(5)],['t19:1']),
+    inference(connection,[level(5)],['t19:1']), 
     [] ).
-                
+                    

@@ -43587,16 +43587,6 @@
           }
         }
       }
-      let maxDepth2 = 0;
-      ignoredDes.forEach(function(d2) {
-        if (d2[1] > maxDepth2) {
-          maxDepth2 = d2[1];
-        }
-      });
-      for (let [d2, depth] of ignoredDes) {
-        if (d2.graphviz.fillcolor != "#000000")
-          assignColorToNode(colorHelper(depth, minDepth2, maxDepth2), d2);
-      }
       let ignoredAnc = [];
       let index = -1;
       for (let ancNode of ancestors(node)) {
@@ -43609,6 +43599,16 @@
           minDepth2 = a2[1];
         }
       });
+      let maxDepth2 = 0;
+      ignoredDes.forEach(function(d2) {
+        if (d2[1] > maxDepth2) {
+          maxDepth2 = d2[1];
+        }
+      });
+      for (let [d2, depth] of ignoredDes) {
+        if (d2.graphviz.fillcolor != "#000000")
+          assignColorToNode(colorHelper(depth, minDepth2, maxDepth2), d2);
+      }
       for (let [a2, depth] of ignoredAnc) {
         if (a2.graphviz.fillcolor != "#000000")
           assignColorToNode(colorHelper(depth, minDepth2, maxDepth2), a2);

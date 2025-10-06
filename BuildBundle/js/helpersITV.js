@@ -328,22 +328,7 @@ function nodeHoverEventListener(e) {
 			}
 		}
 
-		let maxDepth = 0;
-		ignoredDes.forEach(function (d) {
-			if (d[1] > maxDepth) {
-				maxDepth = d[1];
-			}
-		});
-
-		for (let [d, depth] of ignoredDes) {
-			if(d.graphviz.fillcolor != "#000000")
-				assignColorToNode(colorHelper(depth, minDepth, maxDepth), d);
-		}
-
-
-		//~ ancestors part for pre-start nodes
 		let ignoredAnc = [];
-
 		let index = -1;
 		for (let ancNode of ancestors(node)) {
 			ignoredAnc.push([ancNode[0], index]);
@@ -356,6 +341,20 @@ function nodeHoverEventListener(e) {
 				minDepth = a[1];
 			}
 		});
+
+		let maxDepth = 0;
+		ignoredDes.forEach(function (d) {
+			if (d[1] > maxDepth) {
+				maxDepth = d[1];
+			}
+		});
+
+		for (let [d, depth] of ignoredDes) {
+			if(d.graphviz.fillcolor != "#000000")
+				assignColorToNode(colorHelper(depth, minDepth, maxDepth), d);
+		}
+
+		//~ ancestors part for pre-start nodes
 
 		for (let [a, depth] of ignoredAnc) { //~ same code as Jacks but coloring for ignoredAnc
 			if(a.graphviz.fillcolor != "#000000")
