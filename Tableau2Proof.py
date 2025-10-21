@@ -6,10 +6,9 @@ import requests
 from collections import defaultdict, deque
 from antlr4 import *
 
-from PythonParsers.TPTPLexer import TPTPLexer
-from PythonParsers.TPTPParser import TPTPParser
-from PythonParsers.TPTPVisitor import TPTPVisitor
-
+from PythonParser.TPTPLexer import TPTPLexer
+from PythonParser.TPTPParser import TPTPParser
+from PythonParser.TPTPVisitor import TPTPVisitor
 
 class MyCNFVisitor(TPTPVisitor):
     def visitCnf_annotated(self, ctx):
