@@ -43129,7 +43129,7 @@
     }
     process(ctx, type) {
       let role = ctx.formula_role().getText();
-      if (!["conjecture", "negated_conjecture", "axiom", "plain", "hypothesis"].includes(role)) {
+      if (!["conjecture", "negated_conjecture", "axiom", "hypothesis", "plain", "type", "theorem"].includes(role)) {
         console.log(`"${role}" role not shown for "${ctx.name().getText()}"`);
         return;
       }
